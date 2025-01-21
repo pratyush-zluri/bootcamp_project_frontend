@@ -73,37 +73,6 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
                     {uploading ? 'UPLOADING...' : 'UPLOAD CSV'}
                 </button>
             </div>
-
-            {uploadSummary && (
-                <div className="mt-4 bg-gray-100 p-4 rounded-md max-h-60 overflow-auto">
-                    <h3 className="text-lg font-semibold">Upload Summary</h3>
-                    <p>{uploadSummary.message}</p>
-
-                    {uploadSummary.repeats.length > 0 && (
-                        <div className="mt-2">
-                            <h4 className="font-semibold">Repeats:</h4>
-                            <ul className="list-disc pl-5">
-                                {uploadSummary.repeats.map((item, index) => (
-                                    <li key={index}>
-                                        {item.date} - {item.description} - {item.originalAmount} {item.currency}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {uploadSummary.errors.length > 0 && (
-                        <div className="mt-2">
-                            <h4 className="font-semibold">Errors:</h4>
-                            <ul className="list-disc pl-5">
-                                {uploadSummary.errors.map((error, index) => (
-                                    <li key={index}>{error}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 };

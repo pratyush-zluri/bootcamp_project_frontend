@@ -41,11 +41,7 @@ const Navbar: React.FC = () => {
                     {/* Left Section: Logo and Navigation */}
                     <div className="flex items-center">
                         {/* Logo */}
-                        <img
-                            alt="Company Logo"
-                            className="h-10 w-10"
-                            src="https://storage.googleapis.com/a1aa/image/scY30Hui4U6FBdcvRCP5iD3m7M6Ete3lFY0edn5GelfyKAcQB.jpg"
-                        />
+                        <h1 className='font-extrabold text-xl text-zinc-600'>Transactify</h1>
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex md:space-x-8 ml-6">
                             <Link

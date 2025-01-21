@@ -46,6 +46,22 @@ export const transactionApi = {
         return response.data;
     },
 
+    batchRestoreTransactions: async (ids: number[]) => {
+        const response = await axios.put<{ message: string }>(
+            `${API_BASE_URL}/transactions/batch-restore`,
+            { ids }
+        );
+        return response.data.message;
+    },
+
+    batchHardDeleteTransactions: async (ids: number[]) => {
+        const response = await axios.put<{ message: string }>(
+            `${API_BASE_URL}/transactions/batch-hard-delete`,
+            { ids }
+        );
+        return response.data.message;
+    },
+
     addTransaction: async (transaction: TransactionCreateDTO) => {
         try {
             const response = await axios.post<Transaction>(

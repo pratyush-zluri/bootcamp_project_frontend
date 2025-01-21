@@ -8,6 +8,7 @@ import { Trash2, RefreshCw } from 'lucide-react';
 
 const SoftDeletedTransactions: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [selectedTransactions, setSelectedTransactions] = useState<number[]>([]);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(25);
     const [total, setTotal] = useState(0);
@@ -64,9 +65,62 @@ const SoftDeletedTransactions: React.FC = () => {
         }
     };
 
+    const handleBatchRestoreTransactions = async () => {
+        try {
+            if (selectedTransactions.length === 0) {
+                toast.error('No transactions selected for restoration.');
+                return;
+            }
+
+            await transactionApi.batchRestoreTransactions(selectedTransactions);
+            toast.success('Selected transactions restored successfully!');
+            setSelectedTransactions([]);
+            fetchSoftDeletedTransactions();
+        } catch (error) {
+            let errorMessage = 'Failed to restore selected transactions.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+            }
+            toast.error(errorMessage);
+        }
+    };
+
+    const handleBatchHardDeleteTransactions = async () => {
+        try {
+            if (selectedTransactions.length === 0) {
+                toast.error('No transactions selected for deletion.');
+                return;
+            }
+
+            await transactionApi.batchHardDeleteTransactions(selectedTransactions);
+            toast.success('Selected transactions permanently deleted!');
+            setSelectedTransactions([]);
+            fetchSoftDeletedTransactions();
+        } catch (error) {
+            let errorMessage = 'Failed to delete selected transactions.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+            }
+            toast.error(errorMessage);
+        }
+    };
+
     const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setLimit(parseInt(e.target.value, 10));
         setPage(1);
+    };
+
+    const handleCheckboxChange = (id: number) => {
+        setSelectedTransactions((prevSelected) => {
+            if (prevSelected.includes(id)) {
+                return prevSelected.filter((transactionId) => transactionId !== id);
+            }
+            return [...prevSelected, id];
+        });
     };
 
     const totalPages = Math.ceil(total / limit);
@@ -86,11 +140,79 @@ const SoftDeletedTransactions: React.FC = () => {
                 Soft Deleted Transactions
             </motion.h1>
 
+            <div className="flex justify-center mb-4">
+                <button
+                    onClick={handleBatchRestoreTransactions}
+                    className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={selectedTransactions.length === 0}
+                >
+                    Restore Selected ({selectedTransactions.length})
+                </button>
+
+                <button
+                    onClick={handleBatchHardDeleteTransactions}
+                    className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ml-4"
+                    disabled={selectedTransactions.length === 0}
+                >
+                    Delete Selected ({selectedTransactions.length})
+                </button>
+            </div>
+            <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center">
+                <span className="text-gray-700">Total Transactions: {total}</span>
+
+                <div className="flex items-center gap-4 mt-4 md:mt-0">
+                    <button
+                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={page === 1}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                        Previous
+                    </button>
+                    <span className="text-gray-700">
+                        Page {page} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={page >= totalPages}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                        Next
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-2 mt-4 md:mt-0">
+                    <span className="text-gray-700">Rows per page:</span>
+                    <select
+                        value={limit}
+                        onChange={handleLimitChange}
+                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        {[5, 10, 25, 50, 100].map((value) => (
+                            <option key={value} value={value}>{value}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full table-auto border-collapse">
                         <thead>
                             <tr className="bg-gray-100 text-left">
+                                <th className="px-4 py-2 w-12">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTransactions.length === transactions.length && transactions.length > 0}
+                                        onChange={() => {
+                                            if (selectedTransactions.length === transactions.length) {
+                                                setSelectedTransactions([]);
+                                            } else {
+                                                setSelectedTransactions(transactions.map((transaction) => transaction.id));
+                                            }
+                                        }}
+                                        className="cursor-pointer"
+                                    />
+                                </th>
                                 <th className="px-4 py-2">Description</th>
                                 <th className="px-4 py-2">Date</th>
                                 <th className="px-4 py-2">Original Amount</th>
@@ -102,6 +224,14 @@ const SoftDeletedTransactions: React.FC = () => {
                         <tbody>
                             {transactions.map((transaction) => (
                                 <tr key={transaction.id} className="border-b hover:bg-gray-50">
+                                    <td className="px-4 py-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedTransactions.includes(transaction.id)}
+                                            onChange={() => handleCheckboxChange(transaction.id)}
+                                            className="cursor-pointer"
+                                        />
+                                    </td>
                                     <td className="px-4 py-2 break-words max-w-xs">
                                         {transaction.description}
                                     </td>
@@ -131,42 +261,7 @@ const SoftDeletedTransactions: React.FC = () => {
                     </table>
                 </div>
 
-                <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center">
-                    <span className="text-gray-700">Total Transactions: {total}</span>
 
-                    <div className="flex items-center gap-4 mt-4 md:mt-0">
-                        <button
-                            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                            disabled={page === 1}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                        >
-                            Previous
-                        </button>
-                        <span className="text-gray-700">
-                            Page {page} of {totalPages}
-                        </span>
-                        <button
-                            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                            disabled={page >= totalPages}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                        >
-                            Next
-                        </button>
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-4 md:mt-0">
-                        <span className="text-gray-700">Rows per page:</span>
-                        <select
-                            value={limit}
-                            onChange={handleLimitChange}
-                            className="px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            {[5, 10, 25, 50, 100].map((value) => (
-                                <option key={value} value={value}>{value}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
             </div>
         </div>
     );

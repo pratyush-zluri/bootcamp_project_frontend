@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { useAuth } from '../App';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mail, Lock } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleSuccess = async (credentialResponse: CredentialResponse) => {
         try {
@@ -39,89 +41,121 @@ const LoginPage: React.FC = () => {
         }
     };
 
-    const handleFailure = () => {
-        toast.error('Login failed. Please try again.');
+    const handleEmailLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        // Hardcoded credentials check
+        if (email === 'test@example.com' && password === 'password123') {
+            const userInfo = {
+                name: 'Test User',
+                email: 'test@example.com',
+                imageUrl: '/api/placeholder/32/32',
+            };
+
+            localStorage.setItem('authToken', 'dummy-token');
+            localStorage.setItem('user', JSON.stringify(userInfo));
+            login();
+
+            toast.success('Welcome back, Test User! 👋');
+            navigate('/dashboard');
+        } else {
+            toast.error('Invalid credentials. Use test@example.com / password123');
+        }
+
         setIsLoading(false);
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center p-4">
-            {/* Logo Section */}
+        <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col items-center justify-center p-4">
             <div className="mb-8 animate-fade-in">
-                <div className="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mb-4 mx-auto shadow-lg">
-                    <span className="text-2xl text-white font-bold">A</span>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 text-center">
+                <h1 className="text-3xl md:text-4xl font-bold text-white text-center">
                     Welcome back
                 </h1>
-                <p className="text-gray-600 text-center mt-2">
+                <p className="text-gray-100 text-center mt-2">
                     Please sign in to continue
                 </p>
             </div>
 
-            {/* Login Card */}
-            <div className="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl p-6 md:p-8 w-full max-w-md border border-gray-100 animate-slide-up">
-                <div className="space-y-6">
-                    {/* Google Login Button */}
-                    <div className="relative">
-                        {isLoading && (
-                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
-                                <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-                            </div>
-                        )}
-                        <div className="flex justify-center">
-                            <GoogleLogin
-                                onSuccess={handleSuccess}
-                                onError={handleFailure}
-                                theme="outline"
-                                size="large"
-                                width="300"
+            <div className="bg-white/90 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-full max-w-md border border-white/20 animate-slide-up">
+                <form onSubmit={handleEmailLogin} className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Email
+                        </label>
+                        <div className="relative">
+                            <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="test@example.com"
                             />
                         </div>
                     </div>
 
-                    {/* Divider */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Password
+                        </label>
+                        <div className="relative">
+                            <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="password123"
+                            />
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-200"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                        ) : (
+                            'Sign In'
+                        )}
+                    </button>
+
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-gray-200" />
                         </div>
                         <div className="relative flex justify-center text-sm">
                             <span className="px-2 text-gray-500 bg-white">
-                                or continue with email
+                                or continue with
                             </span>
                         </div>
                     </div>
 
-                    {/* Email Form Placeholder */}
-                    <div className="space-y-4">
-                        <button
-                            className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-                            onClick={() => toast.info('Email login coming soon!')}
-                        >
-                            Sign in with email
-                        </button>
+                    <div className="relative">
+                        {isLoading && (
+                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
+                                <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
+                            </div>
+                        )}
+                        <div className="flex justify-center">
+                            <GoogleLogin
+                                onSuccess={handleSuccess}
+                                onError={() => toast.error('Login failed')}
+                                theme="outline"
+                                size="large"
+                                width="300"
+                            />
+                        </div>
                     </div>
-                </div>
-
-                {/* Terms and Privacy */}
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
-                        By continuing, you agree to our{' '}
-                        <button className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                            Terms of Service
-                        </button>{' '}
-                        and{' '}
-                        <button className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                            Privacy Policy
-                        </button>
-                    </p>
-                </div>
+                </form>
             </div>
 
-            {/* Help Link */}
-            <p className="mt-8 text-sm text-gray-600 animate-fade-in">
+            <p className="mt-8 text-sm text-white animate-fade-in">
                 Need help?{' '}
-                <button className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                <button className="text-pink-200 hover:text-white transition-colors duration-200">
                     Contact Support
                 </button>
             </p>
