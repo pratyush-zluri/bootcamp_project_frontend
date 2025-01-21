@@ -27,8 +27,19 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
             try {
                 const result = await onUpload(file);
                 setUploadSummary(result);
+            } catch (error) {
+                console.error("Error uploading file:", error);
+                setUploadSummary({
+                    message: 'Failed to upload file',
+                    repeats: [],
+                    errors: ['An unexpected error occurred. Please try again.']
+                });
             } finally {
                 setUploading(false);
+                // Reset the file input
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
             }
         }
     };

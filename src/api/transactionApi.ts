@@ -1,17 +1,22 @@
 import axios, { AxiosError } from 'axios';
 import { Transaction, TransactionCreateDTO, TransactionUpdateDTO, CSVUploadResponse } from '../types/transaction';
-import { ApiErrorResponse } from '../types/api';
+
 
 const API_BASE_URL = 'http://localhost:3000';
 
+interface ApiErrorResponse {
+    error?: string;
+    message?: string;
+}
+
 const handleApiError = (error: AxiosError<ApiErrorResponse>) => {
-    if (error.response) {
+    if (error.response && error.response.data) {
         const errorMessage = error.response.data.error || error.response.data.message || 'An error occurred';
         throw new Error(errorMessage);
+    } else {
+        throw new Error('Network error occurred');
     }
-    throw new Error('Network error occurred');
 };
-
 export const transactionApi = {
     getTransactions: async (page: number, limit: number) => {
         try {
@@ -22,6 +27,23 @@ export const transactionApi = {
         } catch (error) {
             handleApiError(error as AxiosError<ApiErrorResponse>);
         }
+    },
+
+    searchTransactions: async (query: string) => {
+        const response = await axios.get<Transaction[]>(`${API_BASE_URL}/transactions/search`, { params: { query } });
+        return response.data;
+    },
+    getSoftDeletedTransactions: async (page: number, limit: number) => {
+        const response = await axios.get<{ transactions: Transaction[]; total: number }>(`${API_BASE_URL}/transactions/soft-deleted`, { params: { page, limit } });
+        return response.data;
+    },
+    restoreTransaction: async (id: number) => {
+        const response = await axios.patch<{ message: string; transaction: Transaction }>(`${API_BASE_URL}/transactions/${id}/restore`);
+        return response.data;
+    },
+    hardDeleteTransaction: async (id: number) => {
+        const response = await axios.delete<{ message: string }>(`${API_BASE_URL}/transactions/${id}`);
+        return response.data;
     },
 
     addTransaction: async (transaction: TransactionCreateDTO) => {
@@ -106,6 +128,4 @@ export const transactionApi = {
             handleApiError(error as AxiosError<ApiErrorResponse>);
         }
     },
-
-
 };

@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useState, useContext, ReactNode } from
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import SoftDeletedTransactions from './pages/softDeleted';
 import { ToastContainer } from 'react-toastify';
 import Navbar from './components/Navbar';
 
@@ -67,9 +68,7 @@ const App: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    } else {
+    if (!isAuthenticated) {
       navigate('/login');
     }
   }, [isAuthenticated, navigate]);
@@ -81,6 +80,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+        <Route path="/softDeleted" element={isAuthenticated ? <SoftDeletedTransactions /> : <Navigate to="/login" />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </div>

@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { CSVUpload } from '../components/CSVUpload';
 import { transactionApi } from '../api/transactionApi';
@@ -18,19 +17,40 @@ const Dashboard: React.FC = () => {
     const [limit, setLimit] = useState(25);
     const [total, setTotal] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
-
-    const filteredTransactions = transactions.filter(transaction =>
-        transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        transaction.currency.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const [uploadSummary, setUploadSummary] = useState<{
+        message: string;
+        repeats: Transaction[];
+        errors: string[];
+    } | null>(null);
 
     const fetchTransactions = async () => {
         try {
             const response = await transactionApi.getTransactions(page, limit);
             setTransactions(response?.transactions ?? []);
             setTotal(response?.total ?? 0);
-        } catch {
-            toast.error("Failed to fetch transactions.");
+        } catch (error) {
+            let errorMessage = 'Failed to fetch transactions.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+            }
+            toast.error(errorMessage);
+        }
+    };
+
+    const searchTransactions = async (query: string) => {
+        try {
+            const response = await transactionApi.searchTransactions(query);
+            setTransactions(response);
+        } catch (error) {
+            let errorMessage = 'Failed to search transactions.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+            }
+            toast.error(errorMessage);
         }
     };
 
@@ -53,11 +73,20 @@ const Dashboard: React.FC = () => {
     const handleAddTransaction = async (transaction: TransactionCreateDTO) => {
         try {
             await transactionApi.addTransaction(transaction);
-            toast.success("Transaction added successfully!");
+            toast.success('Transaction added successfully!');
             setShowForm(false);
             fetchTransactions();
-        } catch {
-            toast.error("Failed to add transaction.");
+        } catch (error) {
+            let errorMessage = 'Failed to add transaction.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                const apiError = (error as { response: { data: { error: string } } }).response.data.error;
+                if (apiError === 'Transaction already exists') {
+                    errorMessage = apiError;
+                }
+            }
+            toast.error(errorMessage);
         }
     };
 
@@ -65,12 +94,18 @@ const Dashboard: React.FC = () => {
         if (selectedTransaction) {
             try {
                 await transactionApi.updateTransaction(selectedTransaction.id, transaction);
-                toast.success("Transaction updated successfully!");
+                toast.success('Transaction updated successfully!');
                 setShowForm(false);
                 setSelectedTransaction(null);
                 fetchTransactions();
-            } catch {
-                toast.error("Failed to update transaction.");
+            } catch (error) {
+                let errorMessage = 'Failed to update transaction.';
+                if (error instanceof Error) {
+                    errorMessage = error.message;
+                } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                    errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+                }
+                toast.error(errorMessage);
             }
         }
     };
@@ -83,26 +118,38 @@ const Dashboard: React.FC = () => {
     const handleDeleteTransaction = async (id: number) => {
         try {
             await transactionApi.softDeleteTransaction(id);
-            toast.success("Transaction deleted successfully!");
+            toast.success('Transaction deleted successfully!');
             fetchTransactions();
-        } catch {
-            toast.error("Failed to delete transaction.");
+        } catch (error) {
+            let errorMessage = 'Failed to delete transaction.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+            }
+            toast.error(errorMessage);
         }
     };
 
     const handleBatchDeleteTransactions = async () => {
         try {
             if (selectedTransactions.length === 0) {
-                toast.error("No transactions selected for deletion.");
+                toast.error('No transactions selected for deletion.');
                 return;
             }
 
             await transactionApi.softDeleteBatchTransactions(selectedTransactions);
-            toast.success("Selected transactions deleted successfully!");
+            toast.success('Selected transactions deleted successfully!');
             setSelectedTransactions([]);
             fetchTransactions();
-        } catch {
-            toast.error("Failed to delete selected transactions.");
+        } catch (error) {
+            let errorMessage = 'Failed to delete selected transactions.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+            }
+            toast.error(errorMessage);
         }
     };
 
@@ -110,23 +157,30 @@ const Dashboard: React.FC = () => {
         try {
             const response = await transactionApi.uploadCSV(file);
             if (!response) {
-                throw new Error("Undefined response from API.");
+                throw new Error('Undefined response from API.');
             }
 
             const result = {
-                message: response.message || "CSV uploaded successfully!",
+                message: response.message || 'CSV uploaded successfully!',
                 repeats: response.repeats || [],
                 errors: response.errors || [],
             };
 
             toast.success(result.message);
             fetchTransactions();
+            setUploadSummary(result); // Set the upload summary
             return result;
-        } catch {
+        } catch (error) {
+            let errorMessage = 'Failed to upload CSV.';
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+            }
             const result = {
-                message: "Failed to upload CSV.",
+                message: errorMessage,
                 repeats: [],
-                errors: ["An error occurred while uploading the CSV."],
+                errors: [errorMessage],
             };
             toast.error(result.message);
             return result;
@@ -152,6 +206,24 @@ const Dashboard: React.FC = () => {
             }
             return [...prevSelected, id];
         });
+    };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const query = e.target.value;
+        setSearchTerm(query);
+        searchTransactions(query);
+    };
+
+    const handleGetUploadLogs = () => {
+        if (uploadSummary) {
+            const summaryJson = JSON.stringify(uploadSummary, null, 2);
+            const newWindow = window.open();
+            if (newWindow) {
+                newWindow.document.open();
+                newWindow.document.write(`<pre>${summaryJson}</pre>`);
+                newWindow.document.close();
+            }
+        }
     };
 
     return (
@@ -206,7 +278,7 @@ const Dashboard: React.FC = () => {
                         type="text"
                         placeholder="Search transactions..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={handleSearchChange}
                         className="w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -219,6 +291,16 @@ const Dashboard: React.FC = () => {
                 className="mb-8"
             >
                 <CSVUpload onUpload={handleCSVUpload} />
+                {uploadSummary && (
+                    <div className="mt-4 flex justify-center">
+                        <button
+                            onClick={handleGetUploadLogs}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            Get Upload Logs
+                        </button>
+                    </div>
+                )}
             </motion.div>
 
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -229,12 +311,12 @@ const Dashboard: React.FC = () => {
                                 <th className="px-4 py-2 w-12">
                                     <input
                                         type="checkbox"
-                                        checked={selectedTransactions.length === filteredTransactions.length && filteredTransactions.length > 0}
+                                        checked={selectedTransactions.length === transactions.length && transactions.length > 0}
                                         onChange={() => {
-                                            if (selectedTransactions.length === filteredTransactions.length) {
+                                            if (selectedTransactions.length === transactions.length) {
                                                 setSelectedTransactions([]);
                                             } else {
-                                                setSelectedTransactions(filteredTransactions.map((transaction) => transaction.id));
+                                                setSelectedTransactions(transactions.map((transaction) => transaction.id));
                                             }
                                         }}
                                         className="cursor-pointer"
@@ -243,12 +325,13 @@ const Dashboard: React.FC = () => {
                                 <th className="px-4 py-2">Description</th>
                                 <th className="px-4 py-2">Date</th>
                                 <th className="px-4 py-2">Original Amount</th>
+                                <th className="px-4 py-2">Currency</th>
                                 <th className="px-4 py-2">Amount (INR)</th>
                                 <th className="px-4 py-2">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredTransactions.map((transaction) => (
+                            {transactions.map((transaction) => (
                                 <tr key={transaction.id} className="border-b hover:bg-gray-50">
                                     <td className="px-4 py-2">
                                         <input
@@ -262,10 +345,9 @@ const Dashboard: React.FC = () => {
                                         {transaction.description}
                                     </td>
                                     <td className="px-4 py-2">{formatDate(transaction.date)}</td>
-                                    <td className="px-4 py-2">
-                                        {transaction.originalAmount} {transaction.currency}
-                                    </td>
-                                    <td className="px-4 py-2">{transaction.amount_in_inr} ₹</td>
+                                    <td className="px-4 py-2">{transaction.originalAmount}</td>
+                                    <td className="px-4 py-2">{transaction.currency}</td>
+                                    <td className="px-4 py-2">₹ {transaction.amount_in_inr}</td>
                                     <td className="px-4 py-2">
                                         <div className="flex gap-2">
                                             <button

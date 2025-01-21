@@ -1,6 +1,7 @@
+// src/components/Navbar.tsx
 import React, { useState, useEffect } from 'react';
 import { googleLogout } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../App'; // Import the useAuth hook
 
 interface User {
@@ -47,24 +48,18 @@ const Navbar: React.FC = () => {
                         />
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex md:space-x-8 ml-6">
-                            <a
-                                href="#"
+                            <Link
+                                to="/dashboard"
                                 className="text-gray-800 hover:text-indigo-500 font-medium"
                             >
                                 Dashboard
-                            </a>
-                            <a
-                                href="#"
+                            </Link>
+                            <Link
+                                to="/softDeleted"
                                 className="text-gray-800 hover:text-indigo-500 font-medium"
                             >
-                                Transactions
-                            </a>
-                            <a
-                                href="#"
-                                className="text-gray-800 hover:text-indigo-500 font-medium"
-                            >
-                                Reports
-                            </a>
+                                Soft Deleted
+                            </Link>
                         </nav>
                     </div>
 
@@ -130,24 +125,30 @@ const Navbar: React.FC = () => {
             {menuOpen && (
                 <nav className="md:hidden bg-white shadow-md">
                     <div className="space-y-2 px-4 py-4">
-                        <a
-                            href="#"
+                        <Link
+                            to="/dashboard"
                             className="block text-gray-800 hover:text-indigo-500 font-medium"
                         >
                             Dashboard
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            to="#"
                             className="block text-gray-800 hover:text-indigo-500 font-medium"
                         >
                             Transactions
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            to="#"
                             className="block text-gray-800 hover:text-indigo-500 font-medium"
                         >
                             Reports
-                        </a>
+                        </Link>
+                        <Link
+                            to="/softDeleted"
+                            className="block text-gray-800 hover:text-indigo-500 font-medium"
+                        >
+                            Soft Deleted
+                        </Link>
                         <button
                             onClick={handleLogout}
                             className="block w-full text-left text-sm font-medium text-gray-700 hover:text-indigo-500"
