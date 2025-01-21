@@ -12,11 +12,6 @@ interface CSVUploadProps {
 export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
     const [uploading, setUploading] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
-    const [uploadSummary, setUploadSummary] = useState<{
-        message: string;
-        repeats: Transaction[];
-        errors: string[];
-    } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,15 +20,9 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
             setFileName(file.name);
             setUploading(true);
             try {
-                const result = await onUpload(file);
-                setUploadSummary(result);
+                await onUpload(file);
             } catch (error) {
                 console.error("Error uploading file:", error);
-                setUploadSummary({
-                    message: 'Failed to upload file',
-                    repeats: [],
-                    errors: ['An unexpected error occurred. Please try again.']
-                });
             } finally {
                 setUploading(false);
                 // Reset the file input

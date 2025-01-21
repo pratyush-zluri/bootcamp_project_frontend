@@ -67,12 +67,12 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col items-center justify-center p-4">
+        <div className="min-h-screen bg-[#F5EFFF] flex flex-col items-center justify-center p-4">
             <div className="mb-8 animate-fade-in">
-                <h1 className="text-3xl md:text-4xl font-bold text-white text-center">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center">
                     Welcome back
                 </h1>
-                <p className="text-gray-100 text-center mt-2">
+                <p className="text-gray-600 text-center mt-2">
                     Please sign in to continue
                 </p>
             </div>
@@ -89,7 +89,7 @@ const LoginPage: React.FC = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A294F9] focus:border-transparent"
                                 placeholder="test@example.com"
                             />
                         </div>
@@ -105,7 +105,7 @@ const LoginPage: React.FC = () => {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A294F9] focus:border-transparent"
                                 placeholder="password123"
                             />
                         </div>
@@ -113,7 +113,7 @@ const LoginPage: React.FC = () => {
 
                     <button
                         type="submit"
-                        className="w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-200"
+                        className="w-full px-4 py-3 text-sm font-medium text-white bg-[#E5D9F2] rounded-lg hover:bg-[#A294F9] transition-all duration-200"
                         disabled={isLoading}
                     >
                         {isLoading ? (
@@ -137,7 +137,7 @@ const LoginPage: React.FC = () => {
                     <div className="relative">
                         {isLoading && (
                             <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
-                                <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
+                                <Loader2 className="w-6 h-6 text-[#A294F9] animate-spin" />
                             </div>
                         )}
                         <div className="flex justify-center">
@@ -153,9 +153,9 @@ const LoginPage: React.FC = () => {
                 </form>
             </div>
 
-            <p className="mt-8 text-sm text-white animate-fade-in">
+            <p className="mt-8 text-sm text-gray-800 animate-fade-in">
                 Need help?{' '}
-                <button className="text-pink-200 hover:text-white transition-colors duration-200">
+                <button className="text-[#A294F9] hover:text-gray-800 transition-colors duration-200">
                     Contact Support
                 </button>
             </p>

@@ -30,14 +30,14 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                 <div>
                     <button
                         onClick={() => onPageChange(Math.max(page - 1, 1))}
-                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 mr-2"
+                        className="px-4 py-2 bg-[#E5D9F2] rounded-md hover:bg-[#A294F9] mr-2"
                         disabled={page === 1}
                     >
                         Previous
                     </button>
                     <button
                         onClick={() => onPageChange(Math.min(page + 1, totalPages))}
-                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                        className="px-4 py-2 bg-[#E5D9F2] rounded-md hover:bg-[#A294F9]"
                         disabled={page === totalPages}
                     >
                         Next
@@ -58,7 +58,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                 </thead>
                 <tbody>
                     {transactions.map((transaction) => (
-                        <tr key={transaction.id} className="hover:bg-gray-50">
+                        <tr key={transaction.id} className="hover:bg-[#CDC1FF]">
                             <td className="border border-gray-300 px-4 py-2">
                                 {new Date(transaction.date).toLocaleDateString()}
                             </td>
@@ -72,7 +72,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                             <td className="border border-gray-300 px-4 py-2 text-center">
                                 <button
                                     onClick={() => onEdit(transaction)}
-                                    className="text-blue-600 hover:text-blue-800 mr-2"
+                                    className="text-indigo-600 hover:text-indigo-800 mr-2"
                                     title="Edit"
                                 >
                                     <FaEdit size={16} />

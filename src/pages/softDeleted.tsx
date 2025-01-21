@@ -131,7 +131,7 @@ const SoftDeletedTransactions: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8" style={{ backgroundColor: '#F5EFFF' }}>
             <motion.h1
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
@@ -143,7 +143,7 @@ const SoftDeletedTransactions: React.FC = () => {
             <div className="flex justify-center mb-4">
                 <button
                     onClick={handleBatchRestoreTransactions}
-                    className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={selectedTransactions.length === 0}
                 >
                     Restore Selected ({selectedTransactions.length})
@@ -151,12 +151,13 @@ const SoftDeletedTransactions: React.FC = () => {
 
                 <button
                     onClick={handleBatchHardDeleteTransactions}
-                    className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ml-4"
+                    className="flex items-center px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ml-4"
                     disabled={selectedTransactions.length === 0}
                 >
                     Delete Selected ({selectedTransactions.length})
                 </button>
             </div>
+
             <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center">
                 <span className="text-gray-700">Total Transactions: {total}</span>
 
@@ -164,7 +165,7 @@ const SoftDeletedTransactions: React.FC = () => {
                     <button
                         onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                         disabled={page === 1}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         Previous
                     </button>
@@ -174,7 +175,7 @@ const SoftDeletedTransactions: React.FC = () => {
                     <button
                         onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
                         disabled={page >= totalPages}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         Next
                     </button>
@@ -185,7 +186,7 @@ const SoftDeletedTransactions: React.FC = () => {
                     <select
                         value={limit}
                         onChange={handleLimitChange}
-                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A294F9]"
                     >
                         {[5, 10, 25, 50, 100].map((value) => (
                             <option key={value} value={value}>{value}</option>
@@ -223,7 +224,7 @@ const SoftDeletedTransactions: React.FC = () => {
                         </thead>
                         <tbody>
                             {transactions.map((transaction) => (
-                                <tr key={transaction.id} className="border-b hover:bg-gray-50">
+                                <tr key={transaction.id} className="border-b hover:bg-[#CDC1FF]">
                                     <td className="px-4 py-2">
                                         <input
                                             type="checkbox"
@@ -260,8 +261,6 @@ const SoftDeletedTransactions: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-
-
             </div>
         </div>
     );

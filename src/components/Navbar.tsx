@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import React, { useState, useEffect } from 'react';
 import { googleLogout } from '@react-oauth/google';
 import { useNavigate, Link } from 'react-router-dom';
@@ -35,7 +34,7 @@ const Navbar: React.FC = () => {
     };
 
     return (
-        <header className="bg-white shadow-md">
+        <header className="bg-[#E5D9F2] shadow-md">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Left Section: Logo and Navigation */}
@@ -46,13 +45,13 @@ const Navbar: React.FC = () => {
                         <nav className="hidden md:flex md:space-x-8 ml-6">
                             <Link
                                 to="/dashboard"
-                                className="text-gray-800 hover:text-indigo-500 font-medium"
+                                className="text-gray-800 hover:text-[#A294F9] font-medium"
                             >
                                 Dashboard
                             </Link>
                             <Link
                                 to="/softDeleted"
-                                className="text-gray-800 hover:text-indigo-500 font-medium"
+                                className="text-gray-800 hover:text-[#A294F9] font-medium"
                             >
                                 Soft Deleted
                             </Link>
@@ -84,7 +83,7 @@ const Navbar: React.FC = () => {
                         </button>
 
                         {/* Notifications */}
-                        <button className="bg-white p-1 rounded-full text-gray-400 hover:text-indigo-500">
+                        <button className="bg-white p-1 rounded-full text-gray-400 hover:text-[#A294F9]">
                             <span className="sr-only">View notifications</span>
                             <i className="fas fa-bell"></i>
                         </button>
@@ -109,7 +108,7 @@ const Navbar: React.FC = () => {
                         {/* Logout Button */}
                         <button
                             onClick={handleLogout}
-                            className="hidden md:block text-sm font-medium text-gray-700 hover:text-indigo-500"
+                            className="hidden md:block text-sm font-medium text-gray-700 hover:text-[#A294F9]"
                         >
                             Logout
                         </button>
@@ -123,31 +122,31 @@ const Navbar: React.FC = () => {
                     <div className="space-y-2 px-4 py-4">
                         <Link
                             to="/dashboard"
-                            className="block text-gray-800 hover:text-indigo-500 font-medium"
+                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
                         >
                             Dashboard
                         </Link>
                         <Link
                             to="#"
-                            className="block text-gray-800 hover:text-indigo-500 font-medium"
+                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
                         >
                             Transactions
                         </Link>
                         <Link
                             to="#"
-                            className="block text-gray-800 hover:text-indigo-500 font-medium"
+                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
                         >
                             Reports
                         </Link>
                         <Link
                             to="/softDeleted"
-                            className="block text-gray-800 hover:text-indigo-500 font-medium"
+                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
                         >
                             Soft Deleted
                         </Link>
                         <button
                             onClick={handleLogout}
-                            className="block w-full text-left text-sm font-medium text-gray-700 hover:text-indigo-500"
+                            className="block w-full text-left text-sm font-medium text-gray-700 hover:text-[#A294F9]"
                         >
                             Logout
                         </button>

@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { Transaction, TransactionCreateDTO, TransactionUpdateDTO, CSVUploadResponse } from '../types/transaction';
 
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://bootcamp-project-backend-c0h3.onrender.com';
 
 interface ApiErrorResponse {
     error?: string;
