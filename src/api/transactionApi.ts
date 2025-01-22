@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { Transaction, TransactionCreateDTO, TransactionUpdateDTO, CSVUploadResponse } from '../types/transaction';
-import * as dotenv from 'dotenv';
-dotenv.config();
-const API_BASE_URL = process.env.api_base_url;
+
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface ApiErrorResponse {
     error?: string;
@@ -17,6 +17,7 @@ const handleApiError = (error: AxiosError<ApiErrorResponse>) => {
         throw new Error('Network error occurred');
     }
 };
+
 export const transactionApi = {
     getTransactions: async (page: number, limit: number) => {
         try {

@@ -1,12 +1,10 @@
-// src/index.tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import * as dotenv from "dotenv";
-dotenv.config();
-const clientId: string = process.env.client_id!.toString();
+
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID!;
 ReactDOM.render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={clientId}>
