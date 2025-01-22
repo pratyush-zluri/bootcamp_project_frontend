@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { Transaction, TransactionCreateDTO, TransactionUpdateDTO, CSVUploadResponse } from '../types/transaction';
-
-
-const API_BASE_URL = 'https://bootcamp-project-backend-c0h3.onrender.com';
+import * as dotenv from 'dotenv';
+dotenv.config();
+const API_BASE_URL = process.env.api_base_url;
 
 interface ApiErrorResponse {
     error?: string;

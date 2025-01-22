@@ -12,9 +12,11 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "@types/date-fns": "^2.5.3",
+    "@types/dotenv": "^6.1.1",
     "@types/react-toastify": "^4.0.2",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "framer-motion": "^12.0.0",
     "lucide-react": "^0.473.0",
     "react": "^18.3.1",

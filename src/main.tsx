@@ -4,12 +4,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-
+import * as dotenv from "dotenv";
+dotenv.config();
+const clientId: string = process.env.client_id!.toString();
 ReactDOM.render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId="696412359583-e6si83dn9olplg2n5ut0e9qlh58ggoef.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={clientId}>
       <App />
     </GoogleOAuthProvider>
-  </React.StrictMode>,
+  </React.StrictMode >,
   document.getElementById('root')
 );
