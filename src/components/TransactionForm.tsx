@@ -39,6 +39,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         onSubmit(formData);
     };
 
+    // Get today's date in 'yyyy-MM-dd' format
+    const today = format(new Date(), 'yyyy-MM-dd');
+
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -46,6 +49,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 <input
                     type="date"
                     value={formData.date}
+                    max={today} // Set the max attribute to today's date
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"
                     required

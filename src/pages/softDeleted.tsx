@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { transactionApi } from '../api/transactionApi';
+import { transactionApi } from '../api/TransactionApi';
 import { Transaction } from '../types/transaction';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
 import { Trash2, RefreshCw } from 'lucide-react';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const SoftDeletedTransactions: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -12,8 +13,16 @@ const SoftDeletedTransactions: React.FC = () => {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(25);
     const [total, setTotal] = useState(0);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+    const [isBatchDeleteModalOpen, setIsBatchDeleteModalOpen] = useState(false);
+    const [isBatchRestoreModalOpen, setIsBatchRestoreModalOpen] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] = useState<number | null>(null);
+    const [transactionToRestore, setTransactionToRestore] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchSoftDeletedTransactions = async () => {
+        setIsLoading(true);
         try {
             const response = await transactionApi.getSoftDeletedTransactions(page, limit);
             setTransactions(response?.transactions ?? []);
@@ -26,6 +35,8 @@ const SoftDeletedTransactions: React.FC = () => {
                 errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
             }
             toast.error(errorMessage);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -33,35 +44,43 @@ const SoftDeletedTransactions: React.FC = () => {
         fetchSoftDeletedTransactions();
     }, [page, limit]);
 
-    const handleRestoreTransaction = async (id: number) => {
-        try {
-            await transactionApi.restoreTransaction(id);
-            toast.success('Transaction restored successfully!');
-            fetchSoftDeletedTransactions();
-        } catch (error) {
-            let errorMessage = 'Failed to restore transaction.';
-            if (error instanceof Error) {
-                errorMessage = error.message;
-            } else if (typeof error === 'object' && error !== null && 'response' in error) {
-                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+    const handleRestoreTransaction = async () => {
+        if (transactionToRestore !== null) {
+            try {
+                await transactionApi.restoreTransaction(transactionToRestore);
+                toast.success('Transaction restored successfully!');
+                fetchSoftDeletedTransactions();
+            } catch (error) {
+                let errorMessage = 'Failed to restore transaction.';
+                if (error instanceof Error) {
+                    errorMessage = error.message;
+                } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                    errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+                }
+                toast.error(errorMessage);
             }
-            toast.error(errorMessage);
+            setTransactionToRestore(null);
+            setIsRestoreModalOpen(false);
         }
     };
 
-    const handleHardDeleteTransaction = async (id: number) => {
-        try {
-            await transactionApi.hardDeleteTransaction(id);
-            toast.success('Transaction permanently deleted!');
-            fetchSoftDeletedTransactions();
-        } catch (error) {
-            let errorMessage = 'Failed to delete transaction.';
-            if (error instanceof Error) {
-                errorMessage = error.message;
-            } else if (typeof error === 'object' && error !== null && 'response' in error) {
-                errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+    const handleHardDeleteTransaction = async () => {
+        if (transactionToDelete !== null) {
+            try {
+                await transactionApi.hardDeleteTransaction(transactionToDelete);
+                toast.success('Transaction permanently deleted!');
+                fetchSoftDeletedTransactions();
+            } catch (error) {
+                let errorMessage = 'Failed to delete transaction.';
+                if (error instanceof Error) {
+                    errorMessage = error.message;
+                } else if (typeof error === 'object' && error !== null && 'response' in error) {
+                    errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+                }
+                toast.error(errorMessage);
             }
-            toast.error(errorMessage);
+            setTransactionToDelete(null);
+            setIsDeleteModalOpen(false);
         }
     };
 
@@ -85,6 +104,7 @@ const SoftDeletedTransactions: React.FC = () => {
             }
             toast.error(errorMessage);
         }
+        setIsBatchRestoreModalOpen(false);
     };
 
     const handleBatchHardDeleteTransactions = async () => {
@@ -107,6 +127,7 @@ const SoftDeletedTransactions: React.FC = () => {
             }
             toast.error(errorMessage);
         }
+        setIsBatchDeleteModalOpen(false);
     };
 
     const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -135,23 +156,23 @@ const SoftDeletedTransactions: React.FC = () => {
             <motion.h1
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
-                className="text-3xl font-bold text-gray-800 text-center mb-8"
+                className="text-3xl font-bold text-indigo-600 text-center mb-8"
             >
-                Soft Deleted Transactions
+                Deleted Transactions
             </motion.h1>
 
             <div className="flex justify-center mb-4">
                 <button
-                    onClick={handleBatchRestoreTransactions}
-                    className="flex items-center px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => setIsBatchRestoreModalOpen(true)}
+                    className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={selectedTransactions.length === 0}
                 >
                     Restore Selected ({selectedTransactions.length})
                 </button>
 
                 <button
-                    onClick={handleBatchHardDeleteTransactions}
-                    className="flex items-center px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ml-4"
+                    onClick={() => setIsBatchDeleteModalOpen(true)}
+                    className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ml-4"
                     disabled={selectedTransactions.length === 0}
                 >
                     Delete Selected ({selectedTransactions.length})
@@ -214,54 +235,113 @@ const SoftDeletedTransactions: React.FC = () => {
                                         className="cursor-pointer"
                                     />
                                 </th>
-                                <th className="px-4 py-2">Description</th>
-                                <th className="px-4 py-2">Date</th>
-                                <th className="px-4 py-2">Original Amount</th>
-                                <th className="px-4 py-2">Currency</th>
-                                <th className="px-4 py-2">Amount (INR)</th>
-                                <th className="px-4 py-2">Actions</th>
+                                <th className="px-4 py-2 w-1/3">Description</th>
+                                <th className="px-4 py-2 w-24">Date</th>
+                                <th className="px-4 py-2 w-32">Original Amount</th>
+                                <th className="px-4 py-2 w-24">Currency</th>
+                                <th className="px-4 py-2 w-32">Amount (INR)</th>
+                                <th className="px-4 py-2 w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {transactions.map((transaction) => (
-                                <tr key={transaction.id} className="border-b hover:bg-[#CDC1FF]">
-                                    <td className="px-4 py-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedTransactions.includes(transaction.id)}
-                                            onChange={() => handleCheckboxChange(transaction.id)}
-                                            className="cursor-pointer"
-                                        />
-                                    </td>
-                                    <td className="px-4 py-2 break-words max-w-xs">
-                                        {transaction.description}
-                                    </td>
-                                    <td className="px-4 py-2">{formatDate(transaction.date)}</td>
-                                    <td className="px-4 py-2">{transaction.originalAmount}</td>
-                                    <td className="px-4 py-2">{transaction.currency}</td>
-                                    <td className="px-4 py-2">₹ {transaction.amount_in_inr}</td>
-                                    <td className="px-4 py-2">
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleRestoreTransaction(transaction.id)}
-                                                className="text-green-600 hover:text-green-800 transition-colors"
-                                            >
-                                                <RefreshCw className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleHardDeleteTransaction(transaction.id)}
-                                                className="text-red-600 hover:text-red-800 transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={7} className="px-4 py-8 text-center">
+                                        <div className="flex justify-center items-center space-x-2">
+                                            <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" />
+                                            <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.2s' }} />
+                                            <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.4s' }} />
                                         </div>
+                                        <p className="mt-2 text-gray-600">Loading transactions...</p>
                                     </td>
                                 </tr>
-                            ))}
+                            ) : transactions.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="px-4 py-8 text-center text-gray-600">
+                                        No deleted transactions found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                transactions.map((transaction) => (
+                                    <tr key={transaction.id} className="group border-b hover:bg-indigo-100">
+                                        <td className="px-4 py-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedTransactions.includes(transaction.id)}
+                                                onChange={() => handleCheckboxChange(transaction.id)}
+                                                className="cursor-pointer"
+                                            />
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <div className="max-w-xs truncate" title={transaction.description}>
+                                                {transaction.description}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-2">{formatDate(transaction.date)}</td>
+                                        <td className="px-4 py-2">{transaction.originalAmount}</td>
+                                        <td className="px-4 py-2">{transaction.currency}</td>
+                                        <td className="px-4 py-2">₹ {transaction.amount_in_inr}</td>
+                                        <td className="px-4 py-2">
+                                            <div className="flex gap-4 opacity-0 group-hover:opacity-100">
+                                                <button
+                                                    onClick={() => {
+                                                        setTransactionToRestore(transaction.id);
+                                                        setIsRestoreModalOpen(true);
+                                                    }}
+                                                    className="text-green-600 hover:text-green-800 transition-colors"
+                                                >
+                                                    <RefreshCw className="w-5 h-5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setTransactionToDelete(transaction.id);
+                                                        setIsDeleteModalOpen(true);
+                                                    }}
+                                                    className="text-red-600 hover:text-red-800 transition-colors"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {isRestoreModalOpen && (
+                <ConfirmationModal
+                    message="Are you sure you want to restore this transaction?"
+                    onConfirm={handleRestoreTransaction}
+                    onCancel={() => setIsRestoreModalOpen(false)}
+                />
+            )}
+
+            {isDeleteModalOpen && (
+                <ConfirmationModal
+                    message="Are you sure you want to delete this transaction?"
+                    onConfirm={handleHardDeleteTransaction}
+                    onCancel={() => setIsDeleteModalOpen(false)}
+                />
+            )}
+
+            {isBatchRestoreModalOpen && (
+                <ConfirmationModal
+                    message="Are you sure you want to restore the selected transactions?"
+                    onConfirm={handleBatchRestoreTransactions}
+                    onCancel={() => setIsBatchRestoreModalOpen(false)}
+                />
+            )}
+
+            {isBatchDeleteModalOpen && (
+                <ConfirmationModal
+                    message="Are you sure you want to delete the selected transactions?"
+                    onConfirm={handleBatchHardDeleteTransactions}
+                    onCancel={() => setIsBatchDeleteModalOpen(false)}
+                />
+            )}
         </div>
     );
 };

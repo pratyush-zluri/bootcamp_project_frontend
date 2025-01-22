@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { googleLogout } from '@react-oauth/google';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../App'; // Import the useAuth hook
 
 interface User {
@@ -43,18 +43,22 @@ const Navbar: React.FC = () => {
                         <h1 className='font-extrabold text-xl text-zinc-600'>Transactify</h1>
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex md:space-x-8 ml-6">
-                            <Link
+                            <NavLink
                                 to="/dashboard"
-                                className="text-gray-800 hover:text-[#A294F9] font-medium"
+                                className={({ isActive }) =>
+                                    isActive ? 'text-indigo-600 font-bold' : 'text-gray-800 hover:text-[#A294F9] font-medium'
+                                }
                             >
                                 Dashboard
-                            </Link>
-                            <Link
+                            </NavLink>
+                            <NavLink
                                 to="/softDeleted"
-                                className="text-gray-800 hover:text-[#A294F9] font-medium"
+                                className={({ isActive }) =>
+                                    isActive ? 'text-indigo-600 font-bold' : 'text-gray-800 hover:text-[#A294F9] font-medium'
+                                }
                             >
                                 Soft Deleted
-                            </Link>
+                            </NavLink>
                         </nav>
                     </div>
 
@@ -80,12 +84,6 @@ const Navbar: React.FC = () => {
                                     d="M4 6h16M4 12h16m-7 6h7"
                                 />
                             </svg>
-                        </button>
-
-                        {/* Notifications */}
-                        <button className="bg-white p-1 rounded-full text-gray-400 hover:text-[#A294F9]">
-                            <span className="sr-only">View notifications</span>
-                            <i className="fas fa-bell"></i>
                         </button>
 
                         {/* User Info */}
@@ -120,30 +118,22 @@ const Navbar: React.FC = () => {
             {menuOpen && (
                 <nav className="md:hidden bg-white shadow-md">
                     <div className="space-y-2 px-4 py-4">
-                        <Link
+                        <NavLink
                             to="/dashboard"
-                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
+                            className={({ isActive }) =>
+                                isActive ? 'block text-indigo-600 font-bold' : 'block text-gray-800 hover:text-[#A294F9] font-medium'
+                            }
                         >
                             Dashboard
-                        </Link>
-                        <Link
-                            to="#"
-                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
-                        >
-                            Transactions
-                        </Link>
-                        <Link
-                            to="#"
-                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
-                        >
-                            Reports
-                        </Link>
-                        <Link
+                        </NavLink>
+                        <NavLink
                             to="/softDeleted"
-                            className="block text-gray-800 hover:text-[#A294F9] font-medium"
+                            className={({ isActive }) =>
+                                isActive ? 'block text-indigo-600 font-bold' : 'block text-gray-800 hover:text-[#A294F9] font-medium'
+                            }
                         >
                             Soft Deleted
-                        </Link>
+                        </NavLink>
                         <button
                             onClick={handleLogout}
                             className="block w-full text-left text-sm font-medium text-gray-700 hover:text-[#A294F9]"

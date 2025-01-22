@@ -30,9 +30,15 @@ export const transactionApi = {
         }
     },
 
-    searchTransactions: async (query: string) => {
-        const response = await axios.get<Transaction[]>(`${API_BASE_URL}/transactions/search`, { params: { query } });
-        return response.data;
+    searchTransactions: async (query: string, page: number, limit: number) => {
+        try {
+            const response = await axios.get<{ transactions: Transaction[]; total: number }>(
+                `${API_BASE_URL}/transactions/search`, { params: { query, page, limit } }
+            );
+            return response.data;
+        } catch (error) {
+            handleApiError(error as AxiosError<ApiErrorResponse>);
+        }
     },
     getSoftDeletedTransactions: async (page: number, limit: number) => {
         const response = await axios.get<{ transactions: Transaction[]; total: number }>(`${API_BASE_URL}/transactions/soft-deleted`, { params: { page, limit } });

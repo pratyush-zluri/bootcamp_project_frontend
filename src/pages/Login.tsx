@@ -45,12 +45,12 @@ const LoginPage: React.FC = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Hardcoded credentials check
+        // Hardcoded credentials
         if (email === 'test@example.com' && password === 'password123') {
             const userInfo = {
                 name: 'Test User',
                 email: 'test@example.com',
-                imageUrl: '/api/placeholder/32/32',
+                imageUrl: '/avatar.png',
             };
 
             localStorage.setItem('authToken', 'dummy-token');
@@ -113,7 +113,7 @@ const LoginPage: React.FC = () => {
 
                     <button
                         type="submit"
-                        className="w-full px-4 py-3 text-sm font-medium text-white bg-[#E5D9F2] rounded-lg hover:bg-[#A294F9] transition-all duration-200"
+                        className="w-full px-4 py-3 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-800 transition-all duration-200"
                         disabled={isLoading}
                     >
                         {isLoading ? (
@@ -152,13 +152,6 @@ const LoginPage: React.FC = () => {
                     </div>
                 </form>
             </div>
-
-            <p className="mt-8 text-sm text-gray-800 animate-fade-in">
-                Need help?{' '}
-                <button className="text-[#A294F9] hover:text-gray-800 transition-colors duration-200">
-                    Contact Support
-                </button>
-            </p>
         </div>
     );
 };

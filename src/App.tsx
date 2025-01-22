@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useState, useContext, ReactNode } from
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import SoftDeletedTransactions from './pages/softDeleted';
+import SoftDeletedTransactions from './pages/SoftDeleted';
 import { ToastContainer } from 'react-toastify';
 import Navbar from './components/Navbar';
 
@@ -28,13 +28,14 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     const timeout = localStorage.getItem('logoutTimeout');
-    if (timeout) clearTimeout(parseInt(timeout));
+    if (timeout) clearTimeout(Number(timeout));
+    localStorage.removeItem('logoutTimeout');
   };
 
   useEffect(() => {
     const handleActivity = () => {
       const timeout = localStorage.getItem('logoutTimeout');
-      if (timeout) clearTimeout(parseInt(timeout));
+      if (timeout) clearTimeout(Number(timeout));
       const newTimeout = setTimeout(() => logout(), 600000); // Reset timeout for another 10 minutes
       localStorage.setItem('logoutTimeout', newTimeout.toString());
     };

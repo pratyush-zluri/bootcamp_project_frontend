@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { CSVUpload } from '../components/CSVUpload';
-import { transactionApi } from '../api/transactionApi';
+import { transactionApi } from '../api/TransactionApi';
 import { Transaction, TransactionCreateDTO, TransactionUpdateDTO } from '../types/transaction';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
-import { Search, Download, Plus, Trash2 } from 'lucide-react';
+import { Search, Download, Plus, Trash2, Pencil } from 'lucide-react';
 import { TransactionForm } from '../components/TransactionForm';
+import ConfirmationModal from '../components/ConfirmationModal';  // Import the confirmation modal component
 
 const Dashboard: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -17,13 +18,18 @@ const Dashboard: React.FC = () => {
     const [limit, setLimit] = useState(25);
     const [total, setTotal] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
     const [uploadSummary, setUploadSummary] = useState<{
         message: string;
         repeats: Transaction[];
         errors: string[];
     } | null>(null);
+    const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);  // New state for the transaction to delete
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);  // New state for single delete confirmation modal visibility
+    const [isBatchDeleteModalOpen, setIsBatchDeleteModalOpen] = useState(false);  // New state for batch delete confirmation modal visibility
 
     const fetchTransactions = async () => {
+        setIsLoading(true);
         try {
             const response = await transactionApi.getTransactions(page, limit);
             setTransactions(response?.transactions ?? []);
@@ -36,13 +42,17 @@ const Dashboard: React.FC = () => {
                 errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
             }
             toast.error(errorMessage);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const searchTransactions = async (query: string) => {
+        setIsLoading(true);
         try {
-            const response = await transactionApi.searchTransactions(query);
-            setTransactions(response);
+            const response = await transactionApi.searchTransactions(query, page, limit);
+            setTransactions(response?.transactions ?? []);
+            setTotal(response?.total ?? 0);
         } catch (error) {
             let errorMessage = 'Failed to search transactions.';
             if (error instanceof Error) {
@@ -51,24 +61,35 @@ const Dashboard: React.FC = () => {
                 errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
             }
             toast.error(errorMessage);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchTransactions();
-    }, [page, limit]);
+        if (searchTerm) {
+            searchTransactions(searchTerm);
+        } else {
+            fetchTransactions();
+        }
+    }, [page, limit, searchTerm]);
 
     useEffect(() => {
-        if (showForm) {
+        if (showForm || isDeleteModalOpen || isBatchDeleteModalOpen) {
+            // Prevent body shifting by reserving scrollbar space
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
             document.body.style.overflow = 'hidden';
         } else {
+            document.body.style.paddingRight = '';
             document.body.style.overflow = 'unset';
         }
 
         return () => {
+            document.body.style.paddingRight = '';
             document.body.style.overflow = 'unset';
         };
-    }, [showForm]);
+    }, [showForm, isDeleteModalOpen, isBatchDeleteModalOpen]);
 
     const handleAddTransaction = async (transaction: TransactionCreateDTO) => {
         try {
@@ -211,7 +232,7 @@ const Dashboard: React.FC = () => {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const query = e.target.value;
         setSearchTerm(query);
-        searchTransactions(query);
+        setPage(1); // Reset to the first page when a new search term is entered
     };
 
     const handleGetUploadLogs = () => {
@@ -224,6 +245,27 @@ const Dashboard: React.FC = () => {
                 newWindow.document.close();
             }
         }
+    };
+
+    const confirmDeleteTransaction = (transaction: Transaction) => {
+        setTransactionToDelete(transaction);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmBatchDeleteTransactions = () => {
+        setIsBatchDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (transactionToDelete) {
+            handleDeleteTransaction(transactionToDelete.id);
+        }
+        setIsDeleteModalOpen(false);
+    };
+
+    const handleConfirmBatchDelete = () => {
+        handleBatchDeleteTransactions();
+        setIsBatchDeleteModalOpen(false);
     };
 
     return (
@@ -253,7 +295,7 @@ const Dashboard: React.FC = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => transactionApi.downloadCSV()}
-                        className="flex items-center px-4 py-2 bg-indigo-300 text-white rounded-lg hover:bg-indigo-400 transition-all shadow-sm"
+                        className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm"
                     >
                         <Download className="w-4 h-4 mr-2" />
                         Export CSV
@@ -266,7 +308,7 @@ const Dashboard: React.FC = () => {
                             setShowForm(true);
                             setSelectedTransaction(null);
                         }}
-                        className="flex items-center px-4 py-2 bg-indigo-300 text-white rounded-lg hover:bg-indigo-400 transition-all shadow-sm"
+                        className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Add Transaction
@@ -275,8 +317,8 @@ const Dashboard: React.FC = () => {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={handleBatchDeleteTransactions}
-                        className="flex items-center px-4 py-2 bg-indigo-300 text-white rounded-lg hover:bg-indigo-400 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={confirmBatchDeleteTransactions}
+                        className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={selectedTransactions.length === 0}
                     >
                         <Trash2 className="w-4 h-4 mr-2" />
@@ -295,14 +337,13 @@ const Dashboard: React.FC = () => {
                     <div className="mt-4 flex justify-center">
                         <button
                             onClick={handleGetUploadLogs}
-                            className="px-4 py-2 bg-indigo-300 text-white rounded-md hover:bg-indigo-400"
+                            className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-800"
                         >
                             Get Upload Logs
                         </button>
                     </div>
                 )}
             </motion.div>
-
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
@@ -313,7 +354,7 @@ const Dashboard: React.FC = () => {
                             <button
                                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                                 disabled={page === 1}
-                                className="px-4 py-2 bg-indigo-300 text-white rounded-lg hover:bg-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
                                 Previous
                             </button>
@@ -323,7 +364,7 @@ const Dashboard: React.FC = () => {
                             <button
                                 onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
                                 disabled={page >= totalPages}
-                                className="px-4 py-2 bg-indigo-300 text-white rounded-lg hover:bg-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
                                 Next
                             </button>
@@ -334,7 +375,7 @@ const Dashboard: React.FC = () => {
                             <select
                                 value={limit}
                                 onChange={handleLimitChange}
-                                className="px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="px-3 py-2 bg-white border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-800"
                             >
                                 {[5, 10, 25, 50, 100].map((value) => (
                                     <option key={value} value={value}>{value}</option>
@@ -342,73 +383,93 @@ const Dashboard: React.FC = () => {
                             </select>
                         </div>
                     </div>
-                </div>
 
-                <table className="w-full table-auto border-collapse">
-                    <thead>
-                        <tr className="bg-gray-200 text-left">
-                            <th className="px-4 py-2 w-12">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedTransactions.length === transactions.length && transactions.length > 0}
-                                    onChange={() => {
-                                        if (selectedTransactions.length === transactions.length) {
-                                            setSelectedTransactions([]);
-                                        } else {
-                                            setSelectedTransactions(transactions.map((transaction) => transaction.id));
-                                        }
-                                    }}
-                                    className="cursor-pointer"
-                                />
-                            </th>
-                            <th className="px-4 py-2">Description</th>
-                            <th className="px-4 py-2">Date</th>
-                            <th className="px-4 py-2">Original Amount</th>
-                            <th className="px-4 py-2">Currency</th>
-                            <th className="px-4 py-2">Amount (INR)</th>
-                            <th className="px-4 py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {transactions.map((transaction) => (
-                            <tr key={transaction.id} className="border-b hover:bg-indigo-100">
-                                <td className="px-4 py-2">
+                    <table className="w-full table-auto border-collapse">
+                        <thead>
+                            <tr className="bg-gray-200 text-left">
+                                <th className="px-4 py-2 w-12">
                                     <input
                                         type="checkbox"
-                                        checked={selectedTransactions.includes(transaction.id)}
-                                        onChange={() => handleCheckboxChange(transaction.id)}
+                                        checked={selectedTransactions.length === transactions.length && transactions.length > 0}
+                                        onChange={() => {
+                                            if (selectedTransactions.length === transactions.length) {
+                                                setSelectedTransactions([]);
+                                            } else {
+                                                setSelectedTransactions(transactions.map((transaction) => transaction.id));
+                                            }
+                                        }}
                                         className="cursor-pointer"
                                     />
-                                </td>
-                                <td className="px-4 py-2 break-words max-w-xs">
-                                    {transaction.description}
-                                </td>
-                                <td className="px-4 py-2">{formatDate(transaction.date)}</td>
-                                <td className="px-4 py-2">{transaction.originalAmount}</td>
-                                <td className="px-4 py-2">{transaction.currency}</td>
-                                <td className="px-4 py-2">₹ {transaction.amount_in_inr}</td>
-                                <td className="px-4 py-2">
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleEditTransaction(transaction)}
-                                            className="text-indigo-600 hover:text-indigo-800 transition-colors"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteTransaction(transaction.id)}
-                                            className="text-red-600 hover:text-red-800 transition-colors"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
+                                </th>
+                                <th className="px-4 py-2 w-1/3">Description</th>
+                                <th className="px-4 py-2 w-24">Date</th>
+                                <th className="px-4 py-2 w-32">Original Amount</th>
+                                <th className="px-4 py-2 w-24">Currency</th>
+                                <th className="px-4 py-2 w-32">Amount (INR)</th>
+                                <th className="px-4 py-2 w-24">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={7} className="px-4 py-8 text-center">
+                                        <div className="flex justify-center items-center space-x-2">
+                                            <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" />
+                                            <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.2s' }} />
+                                            <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.4s' }} />
+                                        </div>
+                                        <p className="mt-2 text-gray-600">Loading transactions...</p>
+                                    </td>
+                                </tr>
+                            ) : transactions.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="px-4 py-8 text-center text-gray-600">
+                                        No transactions found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                transactions.map((transaction) => (
+                                    <tr key={transaction.id} className="border-b hover:bg-indigo-100 group">
+                                        <td className="px-4 py-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedTransactions.includes(transaction.id)}
+                                                onChange={() => handleCheckboxChange(transaction.id)}
+                                                className="cursor-pointer"
+                                            />
+                                        </td>
+                                        <td className="px-4 py-2 truncate">
+                                            <div className="max-w-xs truncate" title={transaction.description}>
+                                                {transaction.description}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-2">{formatDate(transaction.date)}</td>
+                                        <td className="px-4 py-2">{transaction.originalAmount}</td>
+                                        <td className="px-4 py-2">{transaction.currency}</td>
+                                        <td className="px-4 py-2">₹ {transaction.amount_in_inr}</td>
+                                        <td className="px-4 py-2">
+                                            <div className="flex gap-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                <button
+                                                    onClick={() => handleEditTransaction(transaction)}
+                                                    className="text-indigo-600 hover:text-indigo-800 transition-colors"
+                                                >
+                                                    <Pencil className="w-5 h-5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => confirmDeleteTransaction(transaction)}
+                                                    className="text-red-600 hover:text-red-800 transition-colors"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
 
             {showForm && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
@@ -423,6 +484,22 @@ const Dashboard: React.FC = () => {
                         />
                     </div>
                 </div>
+            )}
+
+            {isDeleteModalOpen && (
+                <ConfirmationModal
+                    message="Are you sure you want to delete this transaction?"
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setIsDeleteModalOpen(false)}
+                />
+            )}
+
+            {isBatchDeleteModalOpen && (
+                <ConfirmationModal
+                    message="Are you sure you want to delete the selected transactions?"
+                    onConfirm={handleConfirmBatchDelete}
+                    onCancel={() => setIsBatchDeleteModalOpen(false)}
+                />
             )}
         </div>
     );
