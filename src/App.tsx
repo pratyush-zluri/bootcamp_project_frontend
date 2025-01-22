@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useState, useContext, ReactNode } from
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import SoftDeletedTransactions from './pages/SoftDeleted';
+import SoftDeletedTransactions from './pages/softDeleted';
 import { ToastContainer } from 'react-toastify';
 import Navbar from './components/Navbar';
 

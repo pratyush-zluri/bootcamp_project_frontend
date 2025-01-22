@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CSVUpload } from '../components/CSVUpload';
-import { transactionApi } from '../api/TransactionApi';
+import { transactionApi } from '../api/transactionApi';
 import { Transaction, TransactionCreateDTO, TransactionUpdateDTO } from '../types/transaction';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
