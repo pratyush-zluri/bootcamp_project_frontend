@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 export type TransactionFormProps = {
     onSubmit: (transaction: TransactionCreateDTO | Transaction) => void;
     onCancel: () => void;
-    initialData?: Transaction; // Optional prop for edit mode
+    initialData?: Transaction; // Ensure all properties are provided
 };
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
@@ -15,7 +15,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     initialData,
 }) => {
     const [formData, setFormData] = useState<TransactionCreateDTO>({
-        // Format the initialData date if it exists, otherwise use current date
         date: initialData?.date ? format(new Date(initialData.date), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
         description: initialData?.description || '',
         originalAmount: initialData?.originalAmount || 0,
@@ -25,7 +24,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     useEffect(() => {
         if (initialData) {
             setFormData({
-                // Format the date when setting form data
                 date: format(new Date(initialData.date), 'yyyy-MM-dd'),
                 description: initialData.description,
                 originalAmount: initialData.originalAmount,
@@ -39,17 +37,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         onSubmit(formData);
     };
 
-    // Get today's date in 'yyyy-MM-dd' format
     const today = format(new Date(), 'yyyy-MM-dd');
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-gray-700">Date</label>
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
                 <input
+                    id="date"
                     type="date"
                     value={formData.date}
-                    max={today} // Set the max attribute to today's date
+                    max={today}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"
                     required
@@ -57,8 +55,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
                 <input
+                    id="description"
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -68,8 +67,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Amount</label>
+                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Amount</label>
                 <input
+                    id="amount"
                     type="number"
                     step="0.01"
                     value={formData.originalAmount}
@@ -81,8 +81,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Currency</label>
+                <label htmlFor="currency" className="block text-sm font-medium text-gray-700">Currency</label>
                 <select
+                    id="currency"
                     value={formData.currency}
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"

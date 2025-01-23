@@ -22,7 +22,6 @@ const LoginPage: React.FC = () => {
                 const userInfo = {
                     name: decoded.name,
                     email: decoded.email,
-                    imageUrl: decoded.picture,
                 };
 
                 localStorage.setItem('authToken', token);
@@ -50,7 +49,6 @@ const LoginPage: React.FC = () => {
             const userInfo = {
                 name: 'Test User',
                 email: 'test@example.com',
-                imageUrl: '/avatar.png',
             };
 
             localStorage.setItem('authToken', 'dummy-token');

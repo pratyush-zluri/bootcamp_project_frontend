@@ -6,7 +6,6 @@ import { useAuth } from '../App'; // Import the useAuth hook
 interface User {
     name: string;
     email: string;
-    imageUrl: string;
 }
 
 const Navbar: React.FC = () => {
@@ -40,7 +39,7 @@ const Navbar: React.FC = () => {
                     {/* Left Section: Logo and Navigation */}
                     <div className="flex items-center">
                         {/* Logo */}
-                        <h1 className='font-extrabold text-xl text-zinc-600'>Transactify</h1>
+                        <h1 className='font-extrabold text-xl text-zinc-600'>Parsinator</h1>
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex md:space-x-8 ml-6">
                             <NavLink
@@ -49,7 +48,7 @@ const Navbar: React.FC = () => {
                                     isActive ? 'text-indigo-600 font-bold' : 'text-gray-800 hover:text-[#A294F9] font-medium'
                                 }
                             >
-                                Dashboard
+                                Transactions
                             </NavLink>
                             <NavLink
                                 to="/softDeleted"
@@ -57,7 +56,7 @@ const Navbar: React.FC = () => {
                                     isActive ? 'text-indigo-600 font-bold' : 'text-gray-800 hover:text-[#A294F9] font-medium'
                                 }
                             >
-                                Soft Deleted
+                                Deleted
                             </NavLink>
                         </nav>
                     </div>
@@ -89,11 +88,6 @@ const Navbar: React.FC = () => {
                         {/* User Info */}
                         {user ? (
                             <div className="flex items-center space-x-3">
-                                <img
-                                    alt="User Avatar"
-                                    className="h-8 w-8 rounded-full"
-                                    src={user.imageUrl}
-                                />
                                 <div className="hidden md:block">
                                     <p className="text-sm font-medium text-gray-800">
                                         {user.name}

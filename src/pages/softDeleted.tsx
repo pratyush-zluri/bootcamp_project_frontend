@@ -186,7 +186,7 @@ const SoftDeletedTransactions: React.FC = () => {
                     <button
                         onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                         disabled={page === 1}
-                        className="px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         Previous
                     </button>
@@ -196,7 +196,7 @@ const SoftDeletedTransactions: React.FC = () => {
                     <button
                         onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
                         disabled={page >= totalPages}
-                        className="px-4 py-2 bg-[#E5D9F2] text-white rounded-lg hover:bg-[#A294F9] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         Next
                     </button>

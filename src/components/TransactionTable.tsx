@@ -1,94 +1,114 @@
 import React from 'react';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Importing the icons
 import { Transaction } from '../types/transaction';
+import { Pencil, Trash2 } from 'lucide-react';
 
-interface TransactionTableProps {
+export interface TransactionTableProps {
     transactions: Transaction[];
-    onEdit: (transaction: Transaction) => void;
-    onDelete: (id: number) => void;
-    page: number;
-    totalPages: number;
-    onPageChange: (newPage: number) => void;
-    totalTransactions: number;
+    isLoadingNewPage: boolean;
+    selectedTransactions: number[];
+    onCheckboxChange: (id: number) => void;
+    onEditTransaction: (transaction: Transaction) => void;
+    onDeleteTransaction: (transaction: Transaction) => void;
+    onSelectAll: () => void;
 }
 
 export const TransactionTable: React.FC<TransactionTableProps> = ({
     transactions,
-    onEdit,
-    onDelete,
-    page,
-    totalPages,
-    onPageChange,
-    totalTransactions,
+    isLoadingNewPage,
+    selectedTransactions,
+    onCheckboxChange,
+    onEditTransaction,
+    onDeleteTransaction,
+    onSelectAll
 }) => {
-    return (
-        <div>
-            {/* Header Section */}
-            <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-semibold">Total Transactions: {totalTransactions}</span>
-                <span className="text-lg font-semibold">Page {page} of {totalPages}</span>
-                <div>
-                    <button
-                        onClick={() => onPageChange(Math.max(page - 1, 1))}
-                        className="px-4 py-2 bg-[#E5D9F2] rounded-md hover:bg-[#A294F9] mr-2"
-                        disabled={page === 1}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        onClick={() => onPageChange(Math.min(page + 1, totalPages))}
-                        className="px-4 py-2 bg-[#E5D9F2] rounded-md hover:bg-[#A294F9]"
-                        disabled={page === totalPages}
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB');
+    };
 
-            {/* Transaction Table */}
-            <table className="min-w-full border-collapse border border-gray-300">
-                <thead className="bg-gray-100">
-                    <tr>
-                        <th className="border border-gray-300 px-4 py-2">Date</th>
-                        <th className="border border-gray-300 px-4 py-2">Description</th>
-                        <th className="border border-gray-300 px-4 py-2">Original Amount</th>
-                        <th className="border border-gray-300 px-4 py-2">Amount in INR</th>
-                        <th className="border border-gray-300 px-4 py-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {transactions.map((transaction) => (
-                        <tr key={transaction.id} className="hover:bg-[#CDC1FF]">
-                            <td className="border border-gray-300 px-4 py-2">
-                                {new Date(transaction.date).toLocaleDateString()}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">{transaction.description}</td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {transaction.originalAmount.toFixed(2)} {transaction.currency}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                ₹{transaction.amount_in_inr.toFixed(2)}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">
-                                <button
-                                    onClick={() => onEdit(transaction)}
-                                    className="text-indigo-600 hover:text-indigo-800 mr-2"
-                                    title="Edit"
-                                >
-                                    <FaEdit size={16} />
-                                </button>
-                                <button
-                                    onClick={() => onDelete(transaction.id)}
-                                    className="text-red-600 hover:text-red-800"
-                                    title="Delete"
-                                >
-                                    <FaTrashAlt size={16} />
-                                </button>
-                            </td>
+    return (
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden relative">
+            {isLoadingNewPage && (
+                <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+                    <div className="flex justify-center items-center space-x-2">
+                        <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" />
+                        <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.2s' }} />
+                        <div className="w-4 h-4 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.4s' }} />
+                    </div>
+                </div>
+            )}
+            <div className="overflow-x-auto">
+                <table className="w-full table-auto border-collapse">
+                    <thead>
+                        <tr className="bg-gray-200 text-left">
+                            <th className="px-4 py-2 w-12">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedTransactions.length === transactions.length && transactions.length > 0}
+                                    onChange={onSelectAll}
+                                    className="cursor-pointer"
+                                />
+                            </th>
+                            <th className="px-4 py-2 w-1/3">Description</th>
+                            <th className="px-4 py-2 w-24">Date</th>
+                            <th className="px-4 py-2 w-32">Original Amount</th>
+                            <th className="px-4 py-2 w-24">Currency</th>
+                            <th className="px-4 py-2 w-32">Amount (INR)</th>
+                            <th className="px-4 py-2 w-24">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {transactions.length === 0 ? (
+                            <tr>
+                                <td colSpan={7} className="px-4 py-8 text-center text-gray-600">
+                                    No transactions found.
+                                </td>
+                            </tr>
+                        ) : (
+                            transactions.map((transaction) => (
+                                <tr
+                                    key={transaction.id}
+                                    className={`border-b hover:bg-indigo-100 group ${isLoadingNewPage ? 'opacity-50' : ''}`}
+                                >
+                                    <td className="px-4 py-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedTransactions.includes(transaction.id)}
+                                            onChange={() => onCheckboxChange(transaction.id)}
+                                            className="cursor-pointer"
+                                        />
+                                    </td>
+                                    <td className="px-4 py-2 truncate">
+                                        <div className="max-w-xs truncate" title={transaction.description}>
+                                            {transaction.description}
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-2">{formatDate(transaction.date)}</td>
+                                    <td className="px-4 py-2">{transaction.originalAmount}</td>
+                                    <td className="px-4 py-2">{transaction.currency}</td>
+                                    <td className="px-4 py-2">₹ {transaction.amount_in_inr}</td>
+                                    <td className="px-4 py-2">
+                                        <div className="flex gap-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <button
+                                                onClick={() => onEditTransaction(transaction)}
+                                                className="text-indigo-600 hover:text-indigo-800 transition-colors"
+                                            >
+                                                <Pencil className="w-5 h-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => onDeleteTransaction(transaction)}
+                                                className="text-red-600 hover:text-red-800 transition-colors"
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

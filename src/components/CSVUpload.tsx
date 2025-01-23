@@ -50,6 +50,7 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
                 onClick={handleButtonClick}
                 className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-800"
                 disabled={uploading}
+                data-testid="upload-button"
             >
                 {uploading ? 'UPLOADING...' : 'UPLOAD CSV'}
             </button>
@@ -65,6 +66,7 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
                             onChange={handleFileChange}
                             className="mb-4"
                             id="csv-upload"
+                            data-testid="csv-upload"
                         />
                         {fileName && (
                             <p className="text-sm text-gray-600 mb-4">
@@ -75,6 +77,7 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
                             <button
                                 onClick={handleModalClose}
                                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+                                data-testid="cancel-button"
                             >
                                 Cancel
                             </button>
@@ -82,6 +85,7 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
                                 onClick={() => fileInputRef.current?.click()}
                                 className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-800"
                                 disabled={uploading}
+                                data-testid="select-file-button"
                             >
                                 {uploading ? 'UPLOADING...' : 'Select File'}
                             </button>

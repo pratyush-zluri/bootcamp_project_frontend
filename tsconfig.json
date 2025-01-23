@@ -3,5 +3,19 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+    "compilerOptions": {
+        "jsx": "react-jsx", // or "react" for older React versions
+        "strict": true,
+        "module": "CommonJS",
+        "target": "es2020",
+        "lib": ["dom", "es2020"],
+        "esModuleInterop": true,
+        "allowJs": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "skipLibCheck": true
+    }
 }
