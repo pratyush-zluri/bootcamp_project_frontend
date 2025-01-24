@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { googleLogout } from '@react-oauth/google';
 import { useNavigate, NavLink } from 'react-router-dom';
-import { useAuth } from '../App'; // Import the useAuth hook
+import { useAuth } from '../hooks/AuthContext';
 
 interface User {
     name: string;

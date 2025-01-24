@@ -1,6 +1,6 @@
 import React from 'react';
 import { Transaction } from '../types/transaction';
-import { Pencil, Trash2 } from 'lucide-react';
+import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 
 export interface TransactionTableProps {
     transactions: Transaction[];
@@ -93,13 +93,13 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                                                 onClick={() => onEditTransaction(transaction)}
                                                 className="text-indigo-600 hover:text-indigo-800 transition-colors"
                                             >
-                                                <Pencil className="w-5 h-5" />
+                                                <FaPencilAlt className="w-5 h-5" />
                                             </button>
                                             <button
                                                 onClick={() => onDeleteTransaction(transaction)}
                                                 className="text-red-600 hover:text-red-800 transition-colors"
                                             >
-                                                <Trash2 className="w-5 h-5" />
+                                                <FaTrashAlt className="w-5 h-5" />
                                             </button>
                                         </div>
                                     </td>

@@ -4,7 +4,7 @@ import { Transaction } from '../types/transaction';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
-import { Trash2, RefreshCw } from 'lucide-react';
+import { FaTrashAlt, FaSyncAlt } from 'react-icons/fa';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 const SoftDeletedTransactions: React.FC = () => {
@@ -152,19 +152,20 @@ const SoftDeletedTransactions: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8" style={{ backgroundColor: '#F5EFFF' }}>
+        <div className="container mx-auto px-4 py-6 sm:py-8 min-h-screen" style={{ backgroundColor: '#F5EFFF' }}>
             <motion.h1
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
-                className="text-3xl font-bold text-indigo-600 text-center mb-8"
+                className="text-2xl sm:text-3xl font-bold text-indigo-600 text-center mb-6 sm:mb-8"
             >
                 Deleted Transactions
             </motion.h1>
 
-            <div className="flex justify-center mb-4">
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row justify-center mb-4 space-y-2 sm:space-y-0 sm:space-x-4">
                 <button
                     onClick={() => setIsBatchRestoreModalOpen(true)}
-                    className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                     disabled={selectedTransactions.length === 0}
                 >
                     Restore Selected ({selectedTransactions.length})
@@ -172,56 +173,60 @@ const SoftDeletedTransactions: React.FC = () => {
 
                 <button
                     onClick={() => setIsBatchDeleteModalOpen(true)}
-                    className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ml-4"
+                    className="flex items-center justify-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                     disabled={selectedTransactions.length === 0}
                 >
                     Delete Selected ({selectedTransactions.length})
                 </button>
             </div>
 
-            <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center">
-                <span className="text-gray-700">Total Transactions: {total}</span>
+            {/* Pagination and Rows Control */}
+            <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <span className="text-gray-700 text-sm sm:text-base">Total Transactions: {total}</span>
 
-                <div className="flex items-center gap-4 mt-4 md:mt-0">
-                    <button
-                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={page === 1}
-                        className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                    >
-                        Previous
-                    </button>
-                    <span className="text-gray-700">
-                        Page {page} of {totalPages}
-                    </span>
-                    <button
-                        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={page >= totalPages}
-                        className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                    >
-                        Next
-                    </button>
-                </div>
+                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                    <div className="flex items-center space-x-2">
+                        <button
+                            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={page === 1}
+                            className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm sm:text-base"
+                        >
+                            Previous
+                        </button>
+                        <span className="text-gray-700 text-sm sm:text-base">
+                            Page {page} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={page >= totalPages}
+                            className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm sm:text-base"
+                        >
+                            Next
+                        </button>
+                    </div>
 
-                <div className="flex items-center gap-2 mt-4 md:mt-0">
-                    <span className="text-gray-700">Rows per page:</span>
-                    <select
-                        value={limit}
-                        onChange={handleLimitChange}
-                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A294F9]"
-                    >
-                        {[5, 10, 25, 50, 100].map((value) => (
-                            <option key={value} value={value}>{value}</option>
-                        ))}
-                    </select>
+                    <div className="flex items-center space-x-2">
+                        <span className="text-gray-700 text-sm sm:text-base">Rows:</span>
+                        <select
+                            value={limit}
+                            onChange={handleLimitChange}
+                            className="px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A294F9] text-sm sm:text-base"
+                        >
+                            {[5, 10, 25, 50, 100].map((value) => (
+                                <option key={value} value={value}>{value}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
+            {/* Table Container with Fixed Height and Scrolling */}
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden min-h-[300px] flex flex-col">
+                <div className="overflow-x-auto flex-grow">
                     <table className="w-full table-auto border-collapse">
-                        <thead>
-                            <tr className="bg-gray-100 text-left">
-                                <th className="px-4 py-2 w-12">
+                        <thead className="sticky top-0 bg-gray-100">
+                            <tr className="text-left">
+                                <th className="px-4 py-2 w-12 sm:w-16">
                                     <input
                                         type="checkbox"
                                         checked={selectedTransactions.length === transactions.length && transactions.length > 0}
@@ -235,12 +240,12 @@ const SoftDeletedTransactions: React.FC = () => {
                                         className="cursor-pointer"
                                     />
                                 </th>
-                                <th className="px-4 py-2 w-1/3">Description</th>
-                                <th className="px-4 py-2 w-24">Date</th>
-                                <th className="px-4 py-2 w-32">Original Amount</th>
-                                <th className="px-4 py-2 w-24">Currency</th>
-                                <th className="px-4 py-2 w-32">Amount (INR)</th>
-                                <th className="px-4 py-2 w-24">Actions</th>
+                                <th className="px-4 py-2 w-1/3 text-sm sm:text-base">Description</th>
+                                <th className="px-4 py-2 w-24 text-sm sm:text-base">Date</th>
+                                <th className="px-4 py-2 w-32 text-sm sm:text-base hidden sm:table-cell">Original Amount</th>
+                                <th className="px-4 py-2 w-24 text-sm sm:text-base hidden sm:table-cell">Currency</th>
+                                <th className="px-4 py-2 w-32 text-sm sm:text-base">Amount (INR)</th>
+                                <th className="px-4 py-2 w-24 text-sm sm:text-base">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -273,14 +278,14 @@ const SoftDeletedTransactions: React.FC = () => {
                                             />
                                         </td>
                                         <td className="px-4 py-2">
-                                            <div className="max-w-xs truncate" title={transaction.description}>
+                                            <div className="max-w-xs truncate text-sm sm:text-base" title={transaction.description}>
                                                 {transaction.description}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-2">{formatDate(transaction.date)}</td>
-                                        <td className="px-4 py-2">{transaction.originalAmount}</td>
-                                        <td className="px-4 py-2">{transaction.currency}</td>
-                                        <td className="px-4 py-2">₹ {transaction.amount_in_inr}</td>
+                                        <td className="px-4 py-2 text-sm sm:text-base">{formatDate(transaction.date)}</td>
+                                        <td className="px-4 py-2 text-sm sm:text-base hidden sm:table-cell">{transaction.originalAmount}</td>
+                                        <td className="px-4 py-2 text-sm sm:text-base hidden sm:table-cell">{transaction.currency}</td>
+                                        <td className="px-4 py-2 text-sm sm:text-base">₹ {transaction.amount_in_inr}</td>
                                         <td className="px-4 py-2">
                                             <div className="flex gap-4 opacity-0 group-hover:opacity-100">
                                                 <button
@@ -290,7 +295,7 @@ const SoftDeletedTransactions: React.FC = () => {
                                                     }}
                                                     className="text-green-600 hover:text-green-800 transition-colors"
                                                 >
-                                                    <RefreshCw className="w-5 h-5" />
+                                                    <FaSyncAlt className="w-4 h-4 sm:w-5 sm:h-5" />
                                                 </button>
                                                 <button
                                                     onClick={() => {
@@ -299,7 +304,7 @@ const SoftDeletedTransactions: React.FC = () => {
                                                     }}
                                                     className="text-red-600 hover:text-red-800 transition-colors"
                                                 >
-                                                    <Trash2 className="w-5 h-5" />
+                                                    <FaTrashAlt className="w-4 h-4 sm:w-5 sm:h-5" />
                                                 </button>
                                             </div>
                                         </td>

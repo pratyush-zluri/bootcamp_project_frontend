@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import { useAuth } from '../App';
-import { Loader2, Mail, Lock } from 'lucide-react';
+import { useAuth } from '../hooks/AuthContext';
+import { FaEnvelope, FaLock, FaSpinner } from 'react-icons/fa';
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
@@ -82,7 +82,7 @@ const LoginPage: React.FC = () => {
                             Email
                         </label>
                         <div className="relative">
-                            <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                            <FaEnvelope className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                             <input
                                 type="email"
                                 value={email}
@@ -98,7 +98,7 @@ const LoginPage: React.FC = () => {
                             Password
                         </label>
                         <div className="relative">
-                            <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                            <FaLock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                             <input
                                 type="password"
                                 value={password}
@@ -115,7 +115,7 @@ const LoginPage: React.FC = () => {
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                            <FaSpinner className="w-5 h-5 animate-spin mx-auto" />
                         ) : (
                             'Sign In'
                         )}
@@ -135,7 +135,7 @@ const LoginPage: React.FC = () => {
                     <div className="relative">
                         {isLoading && (
                             <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-10">
-                                <Loader2 className="w-6 h-6 text-[#A294F9] animate-spin" />
+                                <FaSpinner className="w-6 h-6 text-[#A294F9] animate-spin" />
                             </div>
                         )}
                         <div className="flex justify-center">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Download, Plus, Trash2 } from 'lucide-react';
+import { FaSearch, FaDownload, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -112,36 +112,43 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8" style={{ backgroundColor: '#F5EFFF' }}>
+        <div
+            className="min-h-screen w-full px-4 py-6 sm:px-6 lg:px-8"
+            style={{ backgroundColor: '#F5EFFF', minHeight: 'calc(100vh - 60px)' }}
+        >
             <motion.h1
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
-                className="text-3xl font-bold text-indigo-600 text-center mb-8"
+                className="text-2xl sm:text-3xl font-bold text-indigo-600 text-center mb-6 sm:mb-8"
+                data-testid="dashboard-title"
             >
                 Transactions Dashboard
             </motion.h1>
 
-            {/* Search and Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 items-center">
-                <div className="relative w-full">
+            {/* Search and Action Buttons - Improved Responsiveness */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6 sm:mb-8">
+                <div className="relative flex-grow mb-4 md:mb-0">
                     <input
                         type="text"
                         placeholder="Search transactions..."
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        className="w-full px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+                        data-testid="search-input"
                     />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 </div>
 
-                <div className="flex justify-center md:justify-end gap-2">
+                <div className="flex flex-wrap justify-center md:justify-end gap-2">
+                    {/* Action Buttons with Improved Mobile Responsiveness */}
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => transactionApi.downloadCSV()}
-                        className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm"
+                        className="flex items-center justify-center px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm text-xs sm:text-sm flex-grow-0 w-full sm:w-auto"
+                        data-testid="export-csv-button"
                     >
-                        <Download className="w-4 h-4 mr-2" />
+                        <FaDownload className="w-4 h-4 mr-2" />
                         Export CSV
                     </motion.button>
 
@@ -149,9 +156,10 @@ const Dashboard: React.FC = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => openForm(null)}
-                        className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm"
+                        className="flex items-center justify-center px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm text-xs sm:text-sm flex-grow-0 w-full sm:w-auto"
+                        data-testid="add-transaction-button"
                     >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <FaPlus className="w-4 h-4 mr-2" />
                         Add Transaction
                     </motion.button>
 
@@ -159,63 +167,81 @@ const Dashboard: React.FC = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={openBatchDeleteModal}
-                        className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-800 transition-all shadow-sm text-xs sm:text-sm flex-grow-0 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={selectedTransactions.length === 0}
+                        data-testid="delete-selected-button"
                     >
-                        <Trash2 className="w-4 h-4 mr-2" />
+                        <FaTrashAlt className="w-4 h-4 mr-2" data-testid="trash-icon" />
                         Delete Selected ({selectedTransactions.length})
                     </motion.button>
                 </div>
             </div>
 
-            {/* CSV Upload */}
+            {/* CSV Upload Section - Improved Responsiveness */}
             <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className="mb-8"
+                className="mb-6 sm:mb-8 w-full"
+                data-testid="csv-upload-section"
             >
                 <CSVUpload onUpload={handleCSVUpload} />
                 {uploadSummary && (
                     <div className="mt-4 flex justify-center">
                         <button
                             onClick={handleGetUploadLogs}
-                            className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-800"
+                            className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-800 text-sm sm:text-base"
+                            data-testid="get-upload-logs-button"
                         >
                             Get Upload Logs
                         </button>
                     </div>
                 )}
             </motion.div>
-            <TransactionPagination
-                total={total}
-                page={page}
-                limit={limit}
-                onPageChange={setPage}
-                onLimitChange={handleLimitChange}
-            />
 
-            {/* Transactions Table */}
-            <TransactionTable
-                transactions={transactions}
-                isLoadingNewPage={isLoadingNewPage}
-                selectedTransactions={selectedTransactions}
-                onCheckboxChange={handleCheckboxChange}
-                onEditTransaction={(transaction) => openForm(transaction)}
-                onDeleteTransaction={(transaction) => openDeleteModal(transaction)}
-                onSelectAll={() => setSelectedTransactions(
-                    selectedTransactions.length === transactions.length
-                        ? []
-                        : transactions.map((t) => t.id)
+            {/* Pagination with Full Width */}
+            <div className="w-full mb-4">
+                <TransactionPagination
+                    total={total}
+                    page={page}
+                    limit={limit}
+                    onPageChange={setPage}
+                    onLimitChange={handleLimitChange}
+                    data-testid="pagination"
+                />
+            </div>
+
+            {/* Transactions Table Container - Ensures No Unnecessary White Space */}
+            <div className="w-full overflow-x-auto min-h-[300px]">
+                <TransactionTable
+                    transactions={transactions}
+                    isLoadingNewPage={isLoadingNewPage}
+                    selectedTransactions={selectedTransactions}
+                    onCheckboxChange={handleCheckboxChange}
+                    onEditTransaction={(transaction) => openForm(transaction)}
+                    onDeleteTransaction={(transaction) => openDeleteModal(transaction)}
+                    onSelectAll={() => setSelectedTransactions(
+                        selectedTransactions.length === transactions.length
+                            ? []
+                            : transactions.map((t) => t.id)
+                    )}
+                    data-testid="transaction-table"
+                />
+
+                {/* Empty State Handling */}
+                {(!transactions || transactions.length === 0) && !isLoadingNewPage && (
+                    <div className="flex justify-center items-center h-64 text-gray-500">
+                        No transactions found
+                    </div>
                 )}
-            />
+            </div>
 
-            {/* Pagination */}
-
-
-            {/* Transaction Form Modal */}
+            {/* Existing Modal Implementations Remain the Same */}
             {showForm && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                <div
+                    className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 px-4"
+                    data-testid="transaction-form-modal"
+                >
+                    <div className="bg-white p-4 sm:p-6 rounded-lg w-full max-w-md">
                         <TransactionForm
                             onSubmit={selectedTransaction ? handleUpdateTransaction : handleAddTransaction}
                             onCancel={closeForm}
@@ -234,6 +260,7 @@ const Dashboard: React.FC = () => {
                         closeDeleteModal();
                     }}
                     onCancel={closeDeleteModal}
+                    data-testid="delete-confirmation-modal"
                 />
             )}
 
@@ -245,6 +272,7 @@ const Dashboard: React.FC = () => {
                         closeBatchDeleteModal();
                     }}
                     onCancel={closeBatchDeleteModal}
+                    data-testid="batch-delete-confirmation-modal"
                 />
             )}
         </div>
