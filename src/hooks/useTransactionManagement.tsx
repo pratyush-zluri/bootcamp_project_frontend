@@ -10,7 +10,7 @@ export const useTransactionManagement = (page: number, limit: number, searchTerm
     const [selectedTransactions, setSelectedTransactions] = useState<number[]>([]);
 
     const fetchTransactions = async () => {
-        // Use a different loading state to prevent clearing existing transactions
+
         setIsLoadingNewPage(true);
         try {
             const response = searchTerm

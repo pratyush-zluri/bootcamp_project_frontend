@@ -228,11 +228,11 @@ const Dashboard: React.FC = () => {
                 />
 
                 {/* Empty State Handling */}
-                {(!transactions || transactions.length === 0) && !isLoadingNewPage && (
+                {/* {(!transactions || transactions.length === 0) && !isLoadingNewPage && (
                     <div className="flex justify-center items-center h-64 text-gray-500">
                         No transactions found
                     </div>
-                )}
+                )} */}
             </div>
 
             {/* Existing Modal Implementations Remain the Same */}
