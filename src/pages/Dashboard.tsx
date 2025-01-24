@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Download, Plus, Trash2, Pencil } from 'lucide-react';
+import { Search, Download, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,7 +11,7 @@ import { TransactionTable } from '../components/TransactionTable';
 import { TransactionPagination } from '../components/TransactionPagination';
 
 import { transactionApi } from '../api/transactionApi';
-import { Transaction, TransactionCreateDTO, TransactionUpdateDTO } from '../types/transaction';
+import { TransactionCreateDTO, TransactionUpdateDTO } from '../types/transaction';
 import { useTransactionManagement } from '../hooks/useTransactionManagement';
 import { useUploadSummary } from '../hooks/useUploadSummary';
 import { useModalControl } from '../hooks/useModalControl';
@@ -29,7 +29,6 @@ const Dashboard: React.FC = () => {
         isLoadingNewPage,
         selectedTransactions,
         fetchTransactions,
-        searchTransactions,
         handleCheckboxChange,
         handleBatchDeleteTransactions,
         setSelectedTransactions
