@@ -9,7 +9,7 @@ interface User {
 }
 
 const Navbar: React.FC = () => {
-    const { logout, isAuthenticated } = useAuth(); // Use the login function and auth state from the AuthContext
+    const { logout, isAuthenticated } = useAuth();
     const [user, setUser] = useState<User | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();

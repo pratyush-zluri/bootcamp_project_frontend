@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 export type TransactionFormProps = {
     onSubmit: (transaction: TransactionCreateDTO | Transaction) => void;
     onCancel: () => void;
-    initialData?: Transaction; // Ensure all properties are provided
+    initialData?: Transaction;
 };
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
@@ -48,7 +48,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     type="date"
                     value={formData.date}
                     max={today}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+
+                    onChange={(e) => e.preventDefault()}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"
                     required
                 />
