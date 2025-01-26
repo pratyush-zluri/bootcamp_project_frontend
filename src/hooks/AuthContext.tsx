@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const handleActivity = () => {
             const timeout = localStorage.getItem('logoutTimeout');
             if (timeout) clearTimeout(Number(timeout));
-            const newTimeout = setTimeout(() => logout(), 600000); // Reset timeout for another 10 minutes
+            const newTimeout = setTimeout(() => logout(), 600000);
             localStorage.setItem('logoutTimeout', newTimeout.toString());
         };
 

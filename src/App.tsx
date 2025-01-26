@@ -20,7 +20,7 @@ const App: React.FC = () => {
   return (
     <div>
       <ToastContainer />
-      {isAuthenticated && <Navbar />} {/* Display Navbar if logged in */}
+      {isAuthenticated && <Navbar />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />

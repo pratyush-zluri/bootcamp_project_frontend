@@ -161,7 +161,7 @@ const SoftDeletedTransactions: React.FC = () => {
                 Deleted Transactions
             </motion.h1>
 
-            {/* Action Buttons */}
+
             <div className="flex flex-col sm:flex-row justify-center mb-4 space-y-2 sm:space-y-0 sm:space-x-4">
                 <button
                     onClick={() => setIsBatchRestoreModalOpen(true)}
@@ -180,7 +180,7 @@ const SoftDeletedTransactions: React.FC = () => {
                 </button>
             </div>
 
-            {/* Pagination and Rows Control */}
+
             <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <span className="text-gray-700 text-sm sm:text-base">Total Transactions: {total}</span>
 
@@ -220,7 +220,6 @@ const SoftDeletedTransactions: React.FC = () => {
                 </div>
             </div>
 
-            {/* Table Container with Fixed Height and Scrolling */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden min-h-[300px] flex flex-col">
                 <div className="overflow-x-auto flex-grow">
                     <table className="w-full table-auto border-collapse">

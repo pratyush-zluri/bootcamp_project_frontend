@@ -24,7 +24,7 @@ export interface TransactionUpdateDTO {
 
 export interface CSVUploadResponse {
     message: string;
-    duplicateRows: any[]; // Replace with specific type if known
-    repeatsInDB: any[]; // Replace with specific type if known
+    duplicateRows: any[];
+    repeatsInDB: any[];
     errors: string[];
 }

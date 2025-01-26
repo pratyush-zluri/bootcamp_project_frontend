@@ -17,12 +17,11 @@ import { useUploadSummary } from '../hooks/useUploadSummary';
 import { useModalControl } from '../hooks/useModalControl';
 
 const Dashboard: React.FC = () => {
-    // State and hooks
+
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(25);
 
-    // Custom hooks for transaction management
     const {
         transactions,
         total,
@@ -54,7 +53,6 @@ const Dashboard: React.FC = () => {
         closeBatchDeleteModal
     } = useModalControl();
 
-    // Transaction management handlers
     const handleAddTransaction = async (transaction: TransactionCreateDTO) => {
         try {
             await transactionApi.addTransaction(transaction);
@@ -89,7 +87,6 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    // Utility functions
     const handleApiError = (error: unknown, defaultMessage: string) => {
         const errorMessage = error instanceof Error
             ? error.message
@@ -125,7 +122,7 @@ const Dashboard: React.FC = () => {
                 Transactions Dashboard
             </motion.h1>
 
-            {/* Search and Action Buttons - Improved Responsiveness */}
+
             <div className="flex flex-col md:flex-row gap-4 mb-6 sm:mb-8">
                 <div className="relative flex-grow mb-4 md:mb-0">
                     <input
@@ -140,7 +137,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="flex flex-wrap justify-center md:justify-end gap-2">
-                    {/* Action Buttons with Improved Mobile Responsiveness */}
+
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -177,7 +174,7 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* CSV Upload Section - Improved Responsiveness */}
+
             <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -198,7 +195,7 @@ const Dashboard: React.FC = () => {
                 )}
             </motion.div>
 
-            {/* Pagination with Full Width */}
+
             <div className="w-full mb-4">
                 <TransactionPagination
                     total={total}
@@ -210,7 +207,7 @@ const Dashboard: React.FC = () => {
                 />
             </div>
 
-            {/* Transactions Table Container - Ensures No Unnecessary White Space */}
+
             <div className="w-full overflow-x-auto min-h-[300px]">
                 <TransactionTable
                     transactions={transactions}
@@ -226,16 +223,9 @@ const Dashboard: React.FC = () => {
                     )}
                     data-testid="transaction-table"
                 />
-
-                {/* Empty State Handling */}
-                {/* {(!transactions || transactions.length === 0) && !isLoadingNewPage && (
-                    <div className="flex justify-center items-center h-64 text-gray-500">
-                        No transactions found
-                    </div>
-                )} */}
             </div>
 
-            {/* Existing Modal Implementations Remain the Same */}
+
             {showForm && (
                 <div
                     className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 px-4"
@@ -251,7 +241,7 @@ const Dashboard: React.FC = () => {
                 </div>
             )}
 
-            {/* Confirmation Modals */}
+
             {isDeleteModalOpen && (
                 <ConfirmationModal
                     message="Are you sure you want to delete this transaction?"
