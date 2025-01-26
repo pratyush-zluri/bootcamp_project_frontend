@@ -48,9 +48,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     type="date"
                     value={formData.date}
                     max={today}
-
-                    onChange={(e) => e.preventDefault()}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9] px-2 py-1" // Added padding here
                     required
                 />
             </div>
@@ -62,7 +61,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9] px-2 py-1" // Added padding here
                     required
                 />
             </div>
@@ -75,7 +74,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     step="0.01"
                     value={formData.originalAmount}
                     onChange={(e) => setFormData({ ...formData, originalAmount: parseFloat(e.target.value) })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9] px-2 py-1" // Added padding here
                     required
                     min="0"
                 />
@@ -87,7 +86,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     id="currency"
                     value={formData.currency}
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9]"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9] px-2 py-1" // Added padding here
                     required
                 >
                     {Object.entries(SUPPORTED_CURRENCIES).map(([code, name]) => (

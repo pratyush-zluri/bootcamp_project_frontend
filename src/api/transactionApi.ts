@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { Transaction, TransactionCreateDTO, TransactionUpdateDTO, CSVUploadResponse } from '../types/transaction';
 
 
-const API_BASE_URL = "https://bootcamp-project-backend-c0h3.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface ApiErrorResponse {
     error?: string;

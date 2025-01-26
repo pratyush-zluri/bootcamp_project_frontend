@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Transaction } from "../types/transaction";
+import { toast } from "react-toastify";
 
 interface CSVUploadProps {
     onUpload: (file: File) => Promise<{
         message: string;
-        repeats: Transaction[];
+        duplicateRows: any[];
+        repeatsInDB: any[];
         errors: string[];
     }>;
 }
@@ -14,6 +15,13 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
     const [uploading, setUploading] = useState(false);
     const [fileName, setFileName] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [uploadSummary, setUploadSummary] = useState<{
+        message: string;
+        duplicateRows: any[];
+        repeatsInDB: any[];
+        errors: string[];
+    } | null>(null);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +40,23 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
                 }
                 setIsModalOpen(false);
             }
+        }
+    };
+
+    // Function to open upload logs in a new window
+    const handleViewLogs = () => {
+        if (uploadSummary) {
+            const summaryJson = JSON.stringify(uploadSummary, null, 2); // Format JSON for readability
+            const newWindow = window.open(); // Open a new browser window
+            if (newWindow) {
+                newWindow.document.open();
+                newWindow.document.write(`<pre>${summaryJson}</pre>`); // Write formatted JSON to the new window
+                newWindow.document.close();
+            } else {
+                toast.error("Unable to open logs in a new window.");
+            }
+        } else {
+            toast.error("No upload logs available to view.");
         }
     };
 
