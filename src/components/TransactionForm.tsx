@@ -48,6 +48,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     type="date"
                     value={formData.date}
                     max={today}
+                    min={"1990-01-01"}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#A294F9] focus:ring-[#A294F9] px-2 py-1" // Added padding here
                     required
