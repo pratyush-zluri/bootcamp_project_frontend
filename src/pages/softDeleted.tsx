@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
 import { FaTrashAlt, FaSyncAlt } from 'react-icons/fa';
 import ConfirmationModal from '../components/ConfirmationModal';
-import '../styles/softDeleted.css';
+import '../styles/SoftDeleted.css';
 
 const SoftDeletedTransactions: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
