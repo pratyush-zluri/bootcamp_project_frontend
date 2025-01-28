@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
 import { FaTrashAlt, FaSyncAlt } from 'react-icons/fa';
 import ConfirmationModal from '../components/ConfirmationModal';
+import '../styles/softDeleted.css';
 
 const SoftDeletedTransactions: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -152,7 +153,7 @@ const SoftDeletedTransactions: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-6 sm:py-8 min-h-screen" style={{ backgroundColor: '#F5EFFF' }}>
+        <div className="container mx-auto px-4 py-6 sm:py-8 min-h-screen w-screen" style={{ backgroundColor: '#F5EFFF' }}>
             <motion.h1
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
