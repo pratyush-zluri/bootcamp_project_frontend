@@ -198,7 +198,7 @@ const Dashboard: React.FC = () => {
 
             <div className="w-full mb-4">
                 <TransactionPagination
-                    total={total}
+                    total={total > 0 ? total : 1}
                     page={page}
                     limit={limit}
                     onPageChange={setPage}

@@ -19,6 +19,10 @@ export const CSVUpload: React.FC<CSVUploadProps> = ({ onUpload }) => {
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        if (!file || !file.type.endsWith(".csv")) {
+            alert("Please select a valid CSV file.");
+            return;
+        }
         if (file) {
             setFileName(file.name);
             setUploading(true);

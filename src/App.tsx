@@ -21,7 +21,7 @@ const App: React.FC = () => {
     <div>
       <ToastContainer />
       {isAuthenticated && <Navbar />}
-      <Routes>
+      <Routes> 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
         <Route path="/softDeleted" element={isAuthenticated ? <SoftDeletedTransactions /> : <Navigate to="/login" />} />
